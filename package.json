@@ -1,25 +1,13 @@
 {
   "name": "neoprene",
   "description": "Neo4j wrapper (REST API client) for Node.js",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": {
     "name": "Rory Madden",
     "email": "rorymadden@gmail.com"
   },
   "homepage": "http://rorymadden.github.com/neoprene",
   "contributors": [
-    {
-      "name": "Daniel Gasienica",
-      "email": "daniel@gasienica.ch"
-    },
-    {
-      "name": "Aseem Kishore",
-      "email": "aseem.kishore@gmail.com"
-    },
-    {
-      "name": "Sergio Haro",
-      "email": "sergio.haro.jr@gmail.com"
-    },
     {
       "name": "Rory Madden",
       "email": "rorymadden@gmail.com"

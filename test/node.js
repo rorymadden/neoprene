@@ -133,7 +133,7 @@ describe('model create', function(){
     user2 = users[1];
     user3 = users[2];
     users = [user1, user2, user3];
-    
+
     expect(users).to.be.an('array');
     expect(users.length).to.be(3);
     expect(users[0]).to.be.an('object');
@@ -156,7 +156,7 @@ describe('model create', function(){
     userRel2.save(function(err, res){
       var relType = { id: res.id, type: 'Friend', direction: 'from' };
       userRel1.save(relType, function(err, res){
-        console.log('id save ' + JSON.stringify(res));
+        // console.log('id save ' + JSON.stringify(res));
         expect(err).to.be(null);
         expect(res).to.be.an('object');
         expect(res.node.self).to.be.a('string');
@@ -172,7 +172,7 @@ describe('model create', function(){
     var relType = { email: 'unique@test.com', type: 'Friend', direction: 'to' };
     userRel2.save(function(err, res){
       userRel1.save(relType, function(err, res){
-        console.log('email save ' + JSON.stringify(res));
+        // console.log('email save ' + JSON.stringify(res));
         expect(err).to.be(null);
         expect(res).to.be.an('object');
         expect(res.node.self).to.be.a('string');

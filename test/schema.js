@@ -110,7 +110,7 @@ describe('schemas', function(){
     assert.ok(Ferret.path('extra') instanceof SchemaTypes.Mixed);
 
     assert.strictEqual(Ferret.path('unexistent'), undefined);
-    
+
     var Ferret1 = new Schema({
         name      : "string"
       , fur       : { type: "string" }
@@ -1033,4 +1033,3 @@ describe('schemas', function(){
     })
   })
 });
-  

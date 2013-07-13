@@ -7,7 +7,7 @@ var expect = require('expect.js')
   , neoprene = require(libpath)
   , Schema = require(libpath + '/schema');
 
-neoprene.connect('http://localhost:7474');
+neoprene.connect('http://localhost:7476');
 
 var query
   , CypherNodeSchema
@@ -47,7 +47,6 @@ function createCypherUsers(callback) {
     function () { return count < 10; },
     function (cb) {
       var user = new CypherUser({ name: 'user' + count++});
-      // console.log('user '+neoprene.models['CypherUser'].modelName)
       user.save(function(err, node){
         users.push(node);
         cb();
@@ -74,13 +73,13 @@ function createCypherUsers(callback) {
 describe('cypher queries', function() {
   before(function(done){
     CypherNodeSchema = new Schema({name: String});
-    CypherRelSchema = new Schema;
+    CypherRelSchema = new Schema();
     CypherUser = neoprene.model('node', 'CypherUser', CypherNodeSchema);
     CypherFollows = neoprene.model('relationship', 'cypherfollows', CypherRelSchema);
     createCypherUsers(done);
   });
   it('should fail with no query', function(done) {
-    // query = 'START n=node(' + user0.id + ') RETURN n';
+    // query = 'START n=node(' + user0._id + ') RETURN n';
     neoprene.query(function(err, results) {
       expect(err).to.not.be(null);
       expect(results).to.be(null);
@@ -88,7 +87,7 @@ describe('cypher queries', function() {
     });
   });
   it('should return no results with query', function(done) {
-    query = 'START n=node(' + user0.id + ') MATCH n-[:bad]->r RETURN n';
+    query = 'START n=node(' + user0._id + ') MATCH n-[:bad]->r RETURN n';
     neoprene.query(function(err, results) {
       expect(err).to.not.be(null);
       expect(results).to.be(null);
@@ -96,7 +95,7 @@ describe('cypher queries', function() {
     });
   });
   it('should query single user', function(done) {
-    query = 'START n=node(' + user0.id + ') RETURN n';
+    query = 'START n=node(' + user0._id + ') RETURN n';
     neoprene.query(query, function(err, results) {
       expect(err).to.be(null);
       expect(results).to.be.an('array');
@@ -104,13 +103,13 @@ describe('cypher queries', function() {
 
       expect(results[0]).to.be.an('object');
       expect(results[0]['n']).to.be.an('object');
-      expect(results[0]['n'].id).to.equal(user0.id);
+      expect(results[0]['n']._id).to.equal(user0._id);
       expect(results[0]['n'].data).to.eql(user0.data);
       done();
     });
   });
   it('should query multiple users', function(done) {
-    query = 'START n=node(' + user0.id + ',' + user1.id + ',' + user2.id + ')' +
+    query = 'START n=node(' + user0._id + ',' + user1._id + ',' + user2._id + ')' +
             ' RETURN n' +
             ' ORDER BY n.name';
     neoprene.query(query, function(err, results) {
@@ -129,7 +128,7 @@ describe('cypher queries', function() {
       async.forEach(users, createRelationships, done);
     });
     it('should query relationships', function(done) {
-      query = 'START n=node(' + user6.id + ')' +
+      query = 'START n=node(' + user6._id + ')' +
             ' MATCH (n) -[r:cypherfollows]-> (m)' +
             ' RETURN r, m.name' +
             ' ORDER BY m.name';
@@ -150,7 +149,7 @@ describe('cypher queries', function() {
             ' MATCH (n) -[r:cypherfollows]-> (m)' +
             ' RETURN r, m.name' +
             ' ORDER BY m.name';
-      neoprene.query(query, {userId: user3.id}, function(err, results) {
+      neoprene.query(query, {userId: user3._id}, function(err, results) {
         expect(err).to.be(null);
         expect(results).to.be.an('array');
         expect(results).to.have.length(3);
@@ -163,7 +162,7 @@ describe('cypher queries', function() {
       });
     });
     it('should return collection/array of nodes', function(done) {
-      query = 'START n=node(' + user0.id + ',' + user1.id + ',' + user2.id +
+      query = 'START n=node(' + user0._id + ',' + user1._id + ',' + user2._id +
               ') RETURN collect(n)';
       neoprene.query(query, function(err, results) {
         expect(err).to.be(null);
@@ -174,7 +173,7 @@ describe('cypher queries', function() {
         expect(results[0]['collect(n)']).to.be.an('array');
         expect(results[0]['collect(n)']).to.have.length(3);
         expect(results[0]['collect(n)'][1]).to.be.an('object');
-        expect(results[0]['collect(n)'][1].id).to.equal(user1.id);
+        expect(results[0]['collect(n)'][1]._id).to.equal(user1._id);
         expect(results[0]['collect(n)'][1].data).to.eql(user1.data);
         done();
       });
@@ -183,7 +182,7 @@ describe('cypher queries', function() {
       query = 'START from=node({fromId}), to=node({toId})' +
             ' MATCH path=shortestPath(from -[:cypherfollows*..3]-> to)' +
             ' RETURN path';
-      neoprene.query(query, {fromId: user0.id, toId: user6.id},
+      neoprene.query(query, {fromId: user0._id, toId: user6._id},
         function(err, results) {
         expect(err).to.be(null);
         // TODO Node and Rel instances in returned Path objects aren't
@@ -197,13 +196,13 @@ describe('cypher queries', function() {
         expect(results[0]).to.be.an('object');
         expect(results[0]['path']).to.be.an('object');
 
-        expect(results[0]['path'].start).to.equal(user0.id);
+        expect(results[0]['path'].start).to.equal(user0._id);
 
-        expect(results[0]['path'].end).to.equal(user6.id);
+        expect(results[0]['path'].end).to.equal(user6._id);
 
         expect(results[0]['path'].nodes).to.be.an('array');
         expect(results[0]['path'].nodes).to.have.length(3);
-        expect(results[0]['path'].nodes[1]).to.equal(user3.id);
+        expect(results[0]['path'].nodes[1]).to.equal(user3._id);
 
         expect(results[0]['path'].relationships).to.be.an('array');
         expect(results[0]['path'].relationships).to.have.length(2);

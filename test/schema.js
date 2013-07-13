@@ -11,7 +11,7 @@ var neoprene = require(libpath)
   , ValidationError = require(libpath + '/errors/validation')
   , ValidatorError = require(libpath + '/errors/validator')
   , CastError = require(libpath + '/errors/cast')
-  , db = neoprene.connect('http://localhost:7474')
+  , db = neoprene.connect('http://localhost:7476')
   , expect = require('expect.js')
   , assert = require('assert')
   , async = require('async')
@@ -913,7 +913,7 @@ describe('schemas', function(){
       });
       it('disabling', function(){
         var schema = new Schema({ name: String }, { id: false });
-        assert.strictEqual(undefined, schema.virtuals.id);
+        assert.strictEqual(undefined, schema.virtuals._id);
       });
     });
   });

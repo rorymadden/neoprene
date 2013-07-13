@@ -8,7 +8,7 @@ var neoprene = require(libpath)
   , async = require('async')
   , request = require('superagent');
 
-neoprene.connect('http://localhost:7474')
+neoprene.connect('http://localhost:7476')
 
 var GENDER = ['unknown', 'male', 'female'];
 var emailRegEx = /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/;
@@ -69,12 +69,17 @@ var UserSchema
   , rels = [];
 
 describe('model create', function(){
-  before(function(){
+  before(function(done){
     UserSchema = new Schema(userSchema);
     UserSchema.virtual('name').get(function(){
       return this.first + " " + this.last;
     });
-    // console.log('INDEXES '+JSON.stringify(UserSchema.indexes()))
+    var query = 'start n=node(*) match n-[r?]->() where id(n) <> 0 delete r,n';
+    var params = {};
+
+    neoprene.query(query, params, function(err, results) {
+      done();
+    });
   })
   it('should create relationships', function(done){
     // Setup relationship types
@@ -139,24 +144,23 @@ describe('model create', function(){
     expect(users[0]).to.be.an('object');
     expect(users[0].first).to.be(userData[0].first);
     expect(users[0].self).to.be.equal(undefined);
-    expect(users[0].id).to.not.be(null);
+    expect(users[0]._id).to.not.be(null);
     expect(users[1]).to.be.an('object');
     expect(users[1].first).to.be(userData[1].first);
     expect(users[1].self).to.be.equal(undefined);
-    expect(users[1].id).to.not.be(null);
+    expect(users[1]._id).to.not.be(null);
     expect(users[2]).to.be.an('object');
     expect(users[2].first).to.be(userData[2].first);
     expect(users[2].self).to.be.equal(undefined);
-    expect(users[2].id).to.not.be(null);
+    expect(users[2]._id).to.not.be(null);
     done();
   });
   it('should create a node with a relationship based on node id', function(done){
     var userRel1 = new User(userData[0]);
     var userRel2 = new User({first: 'IDTest', alias: 'test', email: 'idtest@test.com', password: 'whatever'});
     userRel2.save(function(err, res){
-      var relType = { id: res.id, type: 'Friend', direction: 'from' };
+      var relType = { nodeLabel: 'User', indexField: '_id', indexValue: res._id, type: 'Friend', direction: 'from' };
       userRel1.save(relType, function(err, res){
-        // console.log('id save ' + JSON.stringify(res));
         expect(err).to.be(null);
         expect(res).to.be.an('object');
         expect(res.node.self).to.be.a('string');
@@ -169,10 +173,9 @@ describe('model create', function(){
   it('should create a node with a relationship based on email', function(done){
     var userRel1 = new User(userData[0]);
     var userRel2 = new User({first: 'Unique', alias: 'bug', email: 'unique@test.com', password: 'unique'});
-    var relType = { email: 'unique@test.com', type: 'Friend', direction: 'to' };
+    var relType = { nodeLabel: 'User', indexField: 'email', indexValue: 'unique@test.com', type: 'Friend', direction: 'to' };
     userRel2.save(function(err, res){
       userRel1.save(relType, function(err, res){
-        // console.log('email save ' + JSON.stringify(res));
         expect(err).to.be(null);
         expect(res).to.be.an('object');
         expect(res.node.self).to.be.a('string');
@@ -211,7 +214,7 @@ describe('model create', function(){
     user1.first = '      John      ';
     user1.save(function(err, user){
       expect(err).to.be(null);
-      expect(user.first.indexOf(' ')).to.be.eql(-1);
+      expect(user.first).to.be.eql('John');
       done();
     });
   });
@@ -276,15 +279,15 @@ describe('model create', function(){
     done();
   });
   it('should add a relationship', function(done){
-    user1.createRelationshipFrom(user2, 'likes', { created: new Date() },
+    user1.createRelationshipFrom(user2, 'likes', { created: new Date() , tip: 'likes'},
       function(err, rel){
       rels.push(rel);
       expect(err).to.be(null);
       expect(rel).to.be.an('object');
-      expect(rel.id).to.be.a('number');
+      expect(rel._id).to.be.a('number');
       expect(rel.self).to.be.a('string');
-      expect(rel.start).to.be(user2.id);
-      expect(rel.end).to.be(user1.id);
+      expect(rel.start).to.be(user2._id);
+      expect(rel.end).to.be(user1._id);
       expect(rel.type).to.be('likes');
       expect(rel.created).to.be.a('string');
       done();
@@ -299,35 +302,35 @@ describe('model create', function(){
     });
   });
   it('should allow multiple relationships', function(done){
-    var types = ['dislikes', 'follows', 'loves'];
+    var types = ['dislikes', 'follows', 'loves', 'likes'];
     async.map(types, function(type, callback){
       user1.createRelationshipTo(user3, type, { tip: type }, callback);
     }, function(err, results){
       expect(err).to.be(null);
       expect(results).to.be.an('array');
-      expect(results.length).to.be(3);
+      expect(results.length).to.be(4);
       rels.push(results[0]);
       expect(results[0]).to.be.an('object');
-      expect(results[0].id).to.be.a('number');
+      expect(results[0]._id).to.be.a('number');
       expect(results[0].self).to.be.a('string');
-      expect(results[0].start).to.be(user1.id);
-      expect(results[0].end).to.be(user3.id);
+      expect(results[0].start).to.be(user1._id);
+      expect(results[0].end).to.be(user3._id);
       expect(types).to.contain(results[0].tip);
       expect(types).to.contain(results[0].type);
       rels.push(results[1]);
       expect(results[1]).to.be.an('object');
-      expect(results[1].id).to.be.a('number');
+      expect(results[1]._id).to.be.a('number');
       expect(results[1].self).to.be.a('string');
-      expect(results[1].start).to.be(user1.id);
-      expect(results[1].end).to.be(user3.id);
+      expect(results[1].start).to.be(user1._id);
+      expect(results[1].end).to.be(user3._id);
       rels.push(results[2]);
       expect(types).to.contain(results[1].tip);
       expect(types).to.contain(results[1].type);
       expect(results[2]).to.be.an('object');
-      expect(results[2].id).to.be.a('number');
+      expect(results[2]._id).to.be.a('number');
       expect(results[2].self).to.be.a('string');
-      expect(results[2].start).to.be(user1.id);
-      expect(results[2].end).to.be(user3.id);
+      expect(results[2].start).to.be(user1._id);
+      expect(results[2].end).to.be(user3._id);
       expect(types).to.contain(results[2].tip);
       expect(types).to.contain(results[2].type);
       done();
@@ -336,9 +339,9 @@ describe('model create', function(){
 });
 describe('model read', function(){
   it('should get a node by id', function(done){
-    User.findById(user1.id, function(err, node){
+    User.findById(user1._id, function(err, node){
       expect(err).to.be(null);
-      expect(node.id).to.be.eql(user1.id);
+      expect(node._id).to.be.eql(user1._id);
       expect(new Date(node.birthday)).to.be.eql(userData[0].birthday);
       expect(node.self).to.be.eql(user1.self);
       done();
@@ -347,7 +350,7 @@ describe('model read', function(){
   it('should not get a node with bad id', function(done){
     User.findById('user', function(err, node){
       expect(err).to.not.be(null);
-      expect(node).to.be(null);
+      expect(node).to.be.undefined;
       done();
     });
   });
@@ -355,9 +358,9 @@ describe('model read', function(){
     user1.getAllRelationships(function(err, results){
       expect(err).to.be(null);
       expect(results).to.be.an('array');
-      expect(results.length).to.be(4);
+      expect(results.length).to.be(5);
       expect(results[0]).to.be.an('object');
-      expect(results[0].id).to.be.a('number');
+      expect(results[0]._id).to.be.a('number');
       expect(results[0].self).to.be.a('string');
       done();
     });
@@ -366,9 +369,9 @@ describe('model read', function(){
     user1.getAllRelationships('likes', function(err, results){
       expect(err).to.be(null);
       expect(results).to.be.an('array');
-      expect(results.length).to.be(1);
+      expect(results.length).to.be(2);
       expect(results[0]).to.be.an('object');
-      expect(results[0].id).to.be.a('number');
+      expect(results[0]._id).to.be.a('number');
       expect(results[0].self).to.be.a('string');
       done();
     });
@@ -387,7 +390,7 @@ describe('model read', function(){
       expect(results).to.be.an('array');
       expect(results.length).to.be(1);
       expect(results[0]).to.be.an('object');
-      expect(results[0].id).to.be.a('number');
+      expect(results[0]._id).to.be.a('number');
       expect(results[0].self).to.be.a('string');
       done();
     });
@@ -396,9 +399,9 @@ describe('model read', function(){
     user1.getOutgoingRelationships(function(err, results){
       expect(err).to.be(null);
       expect(results).to.be.an('array');
-      expect(results.length).to.be(3);
+      expect(results.length).to.be(4);
       expect(results[0]).to.be.an('object');
-      expect(results[0].id).to.be.a('number');
+      expect(results[0]._id).to.be.a('number');
       expect(results[0].self).to.be.a('string');
       done();
     });
@@ -409,7 +412,7 @@ describe('model read', function(){
       expect(results).to.be.an('array');
       expect(results.length).to.be(1);
       expect(results[0]).to.be.an('object');
-      expect(results[0].id).to.be.a('number');
+      expect(results[0]._id).to.be.a('number');
       expect(results[0].self).to.be.a('string');
       done();
     });
@@ -449,109 +452,77 @@ describe('model read', function(){
   //   });
   // });
   it('should index node', function(done){
-    user1.index('usersTest', 'name', user1.first, function(err) {
+    user1.index('last', function(err) {
       expect(err).to.be(null);
       done();
     });
   });
-  it('should unique index node', function(done){
-    user2.index('usersTest', 'name', user1.first + 'longer', true, function(err) {
-      expect(err).to.be(null);
-      done();
-    });
-  });
+  // TODO: When unique contraints are added to neo4j2
+  // it('should unique index node', function(done){
+  //   user2.index('name', true, function(err) {
+  //     expect(err).to.be(null);
+  //     done();
+  //   });
+  // });
   it('should index relationship', function(done){
-    rels[0].index('followsTest', 'tip', rels[0].type, function(err) {
+    rels[0].index('tip', function(err) {
       expect(err).to.be(null);
       done();
     });
   });
   it('should not index node - bad input', function(done){
-    user1.index('usersTest', 'name', function(err) {
+    user1.index(function(err) {
       expect(err).to.not.be(null);
       done();
     });
   });
   it('should not index relationship - bad input', function(done){
-    rels[0].index('followsTest', 'tip', function(err) {
+    rels[0].index(function(err) {
       expect(err).to.not.be(null);
       done();
     });
   });
-  it('should get indexed node', function(done){
-    neoprene.getIndexedNodes('usersTest', 'name', user1.first, function(err, node) {
+  it('should get indexed nodes', function(done){
+    neoprene.getIndexedNodes('User', 'first', user1.first, function(err, node) {
       expect(err).to.be(null);
       expect(node).to.be.an('array');
-      expect(node.length).to.be(1);
+      expect(node.length).to.be(3);
       expect(node[0].email).to.eql(user1.email);
       done();
     });
   });
   it('should get indexed node', function(done){
-    User.getIndexedNode('usersTest', 'name', user1.first, function(err, node) {
+    User.getIndexedNode('User', 'first', user3.first, function(err, node) {
       expect(err).to.be(null);
-      expect(node.email).to.eql(user1.email);
+      expect(node.email).to.eql(user3.email);
       done();
     });
   });
-  it('should not get indexed node - bad', function(done){
-    neoprene.getIndexedNodes('usersTest', 'name', user3.first, function(err, node) {
-      expect(err).to.be(null);
-      expect(node).to.be.an('array');
-      expect(node.length).to.be(0);
-      done();
-    });
-  });
-  it('should get indexed nodes - query', function(done){
-    var query = 'name:'+user1.first+'*';
-    neoprene.queryNodeIndex('usersTest', query, function(err, nodes) {
-      expect(err).to.be(null);
-      expect(nodes).to.be.an('array');
-      expect(nodes.length).to.be(2);
-      expect(nodes[0]).to.be.an('object');
-      done();
-    });
-  });
-  it('should not get indexed nodes - bad query', function(done){
-    var query = 'name:blue';
-    neoprene.queryNodeIndex('usersTest', query, function(err, nodes) {
-      expect(err).to.be(null);
-      expect(nodes).to.be.an('array');
-      expect(nodes.length).to.be(0);
-      done();
-    });
-  });
-  it('should not get indexed nodes - bad format', function(done){
-    neoprene.queryNodeIndex('usersTest', function(err, nodes) {
-      expect(err).to.not.be(null);
-      expect(nodes).to.be(null);
-      done();
-    });
-  });
-  it('should get not get non-indexed node', function(done){
-    neoprene.getIndexedNodes('usersTest', 'name', user2.first, function(err, node) {
+  it('should not get indexed nodes - bad', function(done){
+    neoprene.getIndexedNodes('User', 'first', 'blah', function(err, node) {
       expect(err).to.be(null);
       expect(node).to.be.an('array');
       expect(node.length).to.be(0);
       done();
     });
   });
-  it('should get indexed relationship', function(done){
-    neoprene.getIndexedRelationships('followsTest', 'tip', 'likes', function(err, rels) {
-      expect(err).to.be(null);
-      expect(rels).to.be.an('array');
-      expect(rels.length).to.be(1);
-      expect(rels[0].self).to.be.a('string');
-      done();
-    });
-  });
-  it('should get indexed relationship', function(done){
-    User.getIndexedRelationship('followsTest', 'tip', 'likes', function(err, rels) {
-      expect(err).to.be(null);
-      expect(rels.self).to.be.a('string');
-      done();
-    });
-  });
+  // TODO: can you query relationship indexes any more?
+  // it('should get indexed relationship', function(done){
+  //   neoprene.getIndexedRelationships('likes', 'tip', 'likes', function(err, rels) {
+  //     expect(err).to.be(null);
+  //     expect(rels).to.be.an('array');
+  //     expect(rels.length).to.be(1);
+  //     expect(rels[0].self).to.be.a('string');
+  //     done();
+  //   });
+  // });
+  // it('should get indexed relationship', function(done){
+  //   User.getIndexedRelationship('likes', 'tip', 'likes', function(err, rels) {
+  //     expect(err).to.be(null);
+  //     expect(rels.self).to.be.a('string');
+  //     done();
+  //   });
+  // });
   // it('should get a path between nodes', function(done){
   //   user2.path(user3, )
   //   done();
@@ -623,10 +594,119 @@ describe('model update', function(){
     });
   });
 });
+
+describe("model queries", function(){
+  var id;
+  it("should find based on conditions", function(done){
+    User.find({email: "mail@test.com"}, function(err, nodes){
+      expect(err).to.be(null);
+      expect(nodes.length).to.be(2);
+      expect(nodes[0].email).to.be("mail@test.com");
+      done();
+    });
+  });
+  // TODO: turn this into a query response
+  it("should error on find if there are no conditions", function(done){
+    User.find(function(err, user){
+      expect(err).to.not.be(null);
+      done();
+    });
+  });
+  it("should return limited fields if fields are specified", function(done){
+    User.find({email: "mail@test.com"}, 'first last', function(err, nodes){
+      expect(err).to.be(null);
+      expect(nodes.length).to.be(2);
+      expect(nodes[0].email).to.be.undefined;
+      expect(nodes[0].gender).to.be.undefined;
+      expect(nodes[0].first).to.not.be(null);
+      expect(nodes[0].last).to.not.be(null);
+      expect(nodes[0]._id).to.not.be.undefined;
+      expect(nodes[0].self).to.not.be.undefined;
+      done();
+    });
+  });
+  it("should return a single node with findOne", function(done){
+    User.findOne({first: 'John'}, function(err, nodes){
+      expect(nodes.length).to.be.undefined;
+      expect(err).to.be(null);
+      expect(nodes.email).to.be("mail@test.com");
+      done();
+    })
+  });
+  it("should find with limit and orderBy", function(done){
+    User.find({active: false}, 'first', { orderBy: [{field: 'first', desc: true }], limit: 5}, function(err, nodes){
+      expect(nodes.length).to.be(5);
+      expect(err).to.be(null);
+      expect(nodes[0].first).to.be('Unique');
+      done();
+    });
+  });
+  it("should ignore limit with findOne", function(done){
+    User.findOne({email: 'mail@test.com'}, '', {limit:5}, function(err, nodes){
+      expect(nodes).to.not.be.an.array;
+      expect(err).to.be(null);
+      done();
+    });
+  });
+  it("should skip records with skip option", function(done){
+    User.find({email: "mail@test.com"}, '', {skip:1}, function(err, nodes){
+      expect(err).to.be(null);
+      expect(nodes.length).to.be(1);
+      expect(nodes[0].email).to.be("mail@test.com");
+      done();
+    });
+  });
+  it("should find and update a record", function(done){
+    User.findOneAndUpdate({first: 'John'}, {first: 'John2', last: 'Surname'}, function(err, node){
+      expect(err).to.be(null);
+      expect(node.first).to.eql('John2');
+      expect(node.last).to.eql('Surname');
+      done();
+    });
+  });
+  it("should find and remove a record - fail with relationships", function(done){
+    User.findOne({email: "mail@test.com"}, function(err, node){
+      id = node._id;
+      User.findOneAndRemove({email:"mail@test.com"}, function(err, node){
+        expect(err).to.not.be(null);
+        User.findById(id, function(err, node){
+          expect(node.email).to.eql('mail@test.com');
+          done();
+        });
+      });
+    });
+  });
+  it("should find and remove a record - force", function(done){
+    User.findOneAndRemove({email:"mail@test.com"}, { remove: {force: true }}, function(err, node){
+      expect(err).to.be(null);
+      User.findById(id, function(err, node){
+        expect(err).to.exist;
+        done();
+      });
+    });
+  });
+  it("should ignore update if find used", function(done){
+    User.find({first: 'John'}, '', {update: {first: 'John2', last: 'Surname'}}, function(err, node){
+      expect(err).to.be(null);
+      expect(node[0].first).to.eql('John');
+      expect(node[0].last).to.eql('Doe');
+      done();
+    });
+  });
+  it("should ignore a remove if find used", function(done){
+    User.find({first: 'John'}, '', {remove: {force:true}}, function(err, node){
+      expect(err).to.be(null);
+      expect(node[0].first).to.eql('John');
+      expect(node[0].last).to.eql('Doe');
+      done();
+    });
+  });
+
+});
 describe('model delete', function(){
   it('should remove a single relationship', function(done){
     user2.getAllRelationships(function(err, relationships){
-      var id = relationships[0].id;
+      var id = relationships[0]._id;
       expect(err).to.be(null);
       relationships[0].del(function(err){
         neoprene.findRelationshipById(id, function(err, rel){
@@ -638,18 +718,18 @@ describe('model delete', function(){
     });
   });
   it('should remove a node with no relationships', function(done){
-    var id = user2.id;
+    var id = user2._id;
     user2.del(function(err){
       expect(err).to.be(null);
       User.findById(id, function(err, node){
         expect(err).to.not.be(null);
-        expect(node).to.be(null);
+        expect(node).to.not.exist;
         done();
       });
     });
   });
   it('should fail to remove a node with relationships', function(done){
-    var id = user1.id;
+    var id = user1._id;
     user1.del(function(err){
       expect(err).to.not.be(null);
       User.findById(id, function(err, node){
@@ -660,29 +740,38 @@ describe('model delete', function(){
     });
   });
   it('should remove a node with multiple relationships - force', function(done){
-    var id = user1.id;
+    var id = user1._id;
     user1.del(true, function(err){
       expect(err).to.be(null);
       User.findById(id, function(err, node){
         expect(err).to.not.be(null);
-        expect(node).to.be(null);
+        expect(node).to.not.exist;
         done();
       });
     });
   });
   it('should remove a node with multiple relationships', function(done){
-    var id = user3.id;
+    var id = user3._id;
     user3.del(true, function(err){
       expect(err).to.be(null);
       User.findById(id, function(err, node){
         expect(err).to.not.be(null);
-        expect(node).to.be(null);
+        expect(node).to.not.exist;
         done();
       });
     });
   });
   it('should remove a node index', function(done){
-    var url = 'http://localhost:7474/db/data/index/node/usersTest';
+    var url = 'http://localhost:7476/db/data/schema/index/User/last';
+    request
+      .del(url)
+      .end(function(res) {
+        expect(res.status).to.be.equal(204);
+        done();
+      });
+  });
+  it('should remove an automated node index', function(done){
+    var url = 'http://localhost:7476/db/data/schema/index/User/first';
     request
       .del(url)
       .end(function(res) {
@@ -691,7 +780,7 @@ describe('model delete', function(){
       });
   });
   it('should remove a relationship index', function(done){
-    var url = 'http://localhost:7474/db/data/index/relationship/followsTest';
+    var url = 'http://localhost:7476/db/data/schema/index/likes/tip';
     request
       .del(url)
       .end(function(res) {

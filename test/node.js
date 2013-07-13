@@ -482,30 +482,30 @@ describe('model read', function(){
       done();
     });
   });
-  it('should get indexed nodes', function(done){
-    neoprene.getIndexedNodes('User', 'first', user1.first, function(err, node) {
-      expect(err).to.be(null);
-      expect(node).to.be.an('array');
-      expect(node.length).to.be(3);
-      expect(node[0].email).to.eql(user1.email);
-      done();
-    });
-  });
-  it('should get indexed node', function(done){
-    User.getIndexedNode('User', 'first', user3.first, function(err, node) {
-      expect(err).to.be(null);
-      expect(node.email).to.eql(user3.email);
-      done();
-    });
-  });
-  it('should not get indexed nodes - bad', function(done){
-    neoprene.getIndexedNodes('User', 'first', 'blah', function(err, node) {
-      expect(err).to.be(null);
-      expect(node).to.be.an('array');
-      expect(node.length).to.be(0);
-      done();
-    });
-  });
+  // it('should get indexed nodes', function(done){
+  //   neoprene.getIndexedNodes('User', 'first', user1.first, function(err, node) {
+  //     expect(err).to.be(null);
+  //     expect(node).to.be.an('array');
+  //     expect(node.length).to.be(3);
+  //     expect(node[0].email).to.eql(user1.email);
+  //     done();
+  //   });
+  // });
+  // it('should get indexed node', function(done){
+  //   User.getIndexedNode('User', 'first', user3.first, function(err, node) {
+  //     expect(err).to.be(null);
+  //     expect(node.email).to.eql(user3.email);
+  //     done();
+  //   });
+  // });
+  // it('should not get indexed nodes - bad', function(done){
+  //   neoprene.getIndexedNodes('User', 'first', 'blah', function(err, node) {
+  //     expect(err).to.be(null);
+  //     expect(node).to.be.an('array');
+  //     expect(node.length).to.be(0);
+  //     done();
+  //   });
+  // });
   // TODO: can you query relationship indexes any more?
   // it('should get indexed relationship', function(done){
   //   neoprene.getIndexedRelationships('likes', 'tip', 'likes', function(err, rels) {

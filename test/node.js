@@ -297,7 +297,7 @@ describe('model create', function(){
     user1.createRelationshipFrom('user2', 'likes', { created: new Date() },
       function(err, rel){
       expect(err).to.not.be(null);
-      expect(rel).to.be(undefined);
+      expect(rel).to.be(null);
       done();
     });
   });
@@ -336,6 +336,24 @@ describe('model create', function(){
       done();
     });
   });
+  it('should remove a relationship from', function(done){
+    user1.createRelationshipFrom(user2._id, 'loves', { created: new Date() , tip: 'likes'}, function(err, rel){
+      expect(err).to.be(null);
+      user1.removeRelationshipFrom(user2, 'loves', function(err){
+        expect(err).to.be(null);
+        done();
+      });
+    });
+  });
+  it('should remove a relationship to', function(done){
+    user1.createRelationshipTo(user2._id, 'dislikes', { created: new Date() , tip: 'likes'}, function(err, rel){
+      expect(err).to.be(null);
+      user1.removeRelationshipTo(user2, 'dislikes', function(err){
+        expect(err).to.be(null);
+        done();
+      });
+    });
+  });
 });
 describe('model read', function(){
   it('should get a node by id', function(done){
@@ -357,92 +375,152 @@ describe('model read', function(){
   it('should get all relationships for a node', function(done){
     user1.getAllRelationships(function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(5);
-      expect(results[0]).to.be.an('object');
-      expect(results[0]._id).to.be.a('number');
-      expect(results[0].self).to.be.a('string');
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(5);
+      expect(results.nodes.length).to.be(5);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]).to.be.an('object');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
       done();
     });
   });
   it('should get all relationships of a type', function(done){
     user1.getAllRelationships('likes', function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(2);
-      expect(results[0]).to.be.an('object');
-      expect(results[0]._id).to.be.a('number');
-      expect(results[0].self).to.be.a('string');
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(2);
+      expect(results.nodes.length).to.be(2);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
       done();
     });
   });
   it('should get not return results if no matches', function(done){
     user1.getAllRelationships('badtype', function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(0);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(0);
+      expect(results.nodes.length).to.be(0);
       done();
     });
   });
   it('should get all incoming relationships', function(done){
     user1.getIncomingRelationships(function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(1);
-      expect(results[0]).to.be.an('object');
-      expect(results[0]._id).to.be.a('number');
-      expect(results[0].self).to.be.a('string');
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(1);
+      expect(results.nodes.length).to.be(1);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
       done();
     });
   });
   it('should get all outgoing relationships - all types', function(done){
     user1.getOutgoingRelationships(function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(4);
-      expect(results[0]).to.be.an('object');
-      expect(results[0]._id).to.be.a('number');
-      expect(results[0].self).to.be.a('string');
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(4);
+      expect(results.nodes.length).to.be(4);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
       done();
     });
   });
   it('should get all outgoing relationships - one type', function(done){
     user1.getOutgoingRelationships('loves', function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(1);
-      expect(results[0]).to.be.an('object');
-      expect(results[0]._id).to.be.a('number');
-      expect(results[0].self).to.be.a('string');
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(1);
+      expect(results.nodes.length).to.be(1);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
       done();
     });
   });
-  it('should get nodes via relationships', function(done){
-    user1.getAdjacentNodes('follows', function(err, nodes) {
-      expect(nodes).to.be.an('array');
-      expect(nodes).to.have.length(1);
-      expect(nodes[0]).to.be.an('object');
-      expect(nodes[0].self).to.equal(user3.self);
-      expect(nodes[0].last).to.eql(userData[2].last);
-      done();
-    });
-  });
-  it('should get nodes via relationships (array)', function(done){
-    user1.getAdjacentNodes(['follows', 'likes'], function(err, nodes) {
-      expect(nodes).to.be.an('array');
-      expect(nodes).to.have.length(2);
-      expect(nodes[0]).to.be.an('object');
-      done();
-    });
-  });
-  it('should get no nodes via bad relationships', function(done){
-    user1.getAdjacentNodes('badrel', function(err, results) {
+  it('should get all outgoing relationships - all types using label', function(done){
+    user1.getOutgoingRelationships(null, 'User', function(err, results){
       expect(err).to.be(null);
-      expect(results).to.be.an('array');
-      expect(results.length).to.be(0);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(4);
+      expect(results.nodes.length).to.be(4);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
       done();
     });
   });
+  it('should get all outgoing relationships - bad label', function(done){
+    user1.getOutgoingRelationships(null, 'Bad', function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(0);
+      expect(results.nodes.length).to.be(0);
+      done();
+    });
+  });
+  // it('should get nodes via relationships', function(done){
+  //   user1.getAdjacentNodes('follows', function(err, nodes) {
+  //     expect(nodes).to.be.an('array');
+  //     expect(nodes).to.have.length(1);
+  //     expect(nodes[0]).to.be.an('object');
+  //     expect(nodes[0].self).to.equal(user3.self);
+  //     expect(nodes[0].last).to.eql(userData[2].last);
+  //     done();
+  //   });
+  // });
+  // it('should get nodes via relationships (array)', function(done){
+  //   user1.getAdjacentNodes(['follows', 'likes'], function(err, nodes) {
+  //     expect(nodes).to.be.an('array');
+  //     expect(nodes).to.have.length(2);
+  //     expect(nodes[0]).to.be.an('object');
+  //     done();
+  //   });
+  // });
+  // it('should get no nodes via bad relationships', function(done){
+  //   user1.getAdjacentNodes('badrel', function(err, results) {
+  //     expect(err).to.be(null);
+  //     expect(results).to.be.an('array');
+  //     expect(results.length).to.be(0);
+  //     done();
+  //   });
+  // });
   // it('should get no nodes via bad relationships', function(done){
   //   user1.traverse('badrel', function(err, results) {
   //     expect(err).to.be(null);
@@ -606,9 +684,10 @@ describe("model queries", function(){
     });
   });
   // TODO: turn this into a query response
-  it("should error on find if there are no conditions", function(done){
-    User.find(function(err, user){
-      expect(err).to.not.be(null);
+  it("should return all for the label if no conditions", function(done){
+    User.find(function(err, users){
+      expect(err).to.not.exist;
+      expect(users.length).to.be(7);
       done();
     });
   });
@@ -706,9 +785,9 @@ describe("model queries", function(){
 describe('model delete', function(){
   it('should remove a single relationship', function(done){
     user2.getAllRelationships(function(err, relationships){
-      var id = relationships[0]._id;
+      var id = relationships.rels[0]._id;
       expect(err).to.be(null);
-      relationships[0].del(function(err){
+      relationships.rels[0].del(function(err){
         neoprene.findRelationshipById(id, function(err, rel){
           expect(err).to.not.be(null);
           expect(rel).to.be(null);

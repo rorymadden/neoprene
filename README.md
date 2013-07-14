@@ -1,7 +1,7 @@
 # Neoprene
 
 Neo4j Object Modelling for Node.js
-NOTE: This only works with Neo4j 2.0
+NOTE: This only works with Neo4j 2.0. If you are using Neo4j < 2.0 then use neoprene 0.1.x. This version of neoprene is no longer supported as the changes are too large between the versions of Neo4j.
 
 Acknowledgements:
 This library is based heavily on the mongoose ORM for mongodb. The neo4j REST API was based on the 'node-neo4j' library.

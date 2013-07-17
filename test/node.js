@@ -8,7 +8,7 @@ var neoprene = require(libpath)
   , async = require('async')
   , request = require('superagent');
 
-neoprene.connect('http://localhost:7476')
+neoprene.connect('http://localhost:7475')
 
 var GENDER = ['unknown', 'male', 'female'];
 var emailRegEx = /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/;
@@ -370,6 +370,15 @@ describe('model read', function(){
       expect(err).to.not.be(null);
       expect(node).to.be.undefined;
       done();
+    });
+  });
+  it("should error if relationship has not been defined", function(done){
+    user1.createRelationshipTo(user2._id, 'newRel', function(err, rel){
+      expect(err).to.exist;
+      user1.removeRelationshipTo(user2._id, 'newRel', function(err){
+        expect(err).to.not.exist;
+        done();
+      });
     });
   });
   it('should get all relationships for a node', function(done){
@@ -765,18 +774,18 @@ describe("model queries", function(){
     });
   });
   it("should ignore update if find used", function(done){
-    User.find({first: 'John'}, '', {update: {first: 'John2', last: 'Surname'}}, function(err, node){
+    User.find({first: 'Jane'}, '', {update: {first: 'Jane2', last: 'Surname'}}, function(err, node){
       expect(err).to.be(null);
-      expect(node[0].first).to.eql('John');
-      expect(node[0].last).to.eql('Doe');
+      expect(node[0].first).to.eql('Jane');
+      expect(node[0].last).to.eql('Briggs');
       done();
     });
   });
   it("should ignore a remove if find used", function(done){
-    User.find({first: 'John'}, '', {remove: {force:true}}, function(err, node){
+    User.find({first: 'Jane'}, '', {remove: {force:true}}, function(err, node){
       expect(err).to.be(null);
-      expect(node[0].first).to.eql('John');
-      expect(node[0].last).to.eql('Doe');
+      expect(node[0].first).to.eql('Jane');
+      expect(node[0].last).to.eql('Briggs');
       done();
     });
   });
@@ -841,7 +850,7 @@ describe('model delete', function(){
     });
   });
   it('should remove a node index', function(done){
-    var url = 'http://localhost:7476/db/data/schema/index/User/last';
+    var url = 'http://localhost:7475/db/data/schema/index/User/last';
     request
       .del(url)
       .end(function(res) {
@@ -850,7 +859,7 @@ describe('model delete', function(){
       });
   });
   it('should remove an automated node index', function(done){
-    var url = 'http://localhost:7476/db/data/schema/index/User/first';
+    var url = 'http://localhost:7475/db/data/schema/index/User/first';
     request
       .del(url)
       .end(function(res) {
@@ -859,7 +868,7 @@ describe('model delete', function(){
       });
   });
   it('should remove a relationship index', function(done){
-    var url = 'http://localhost:7476/db/data/schema/index/likes/tip';
+    var url = 'http://localhost:7475/db/data/schema/index/likes/tip';
     request
       .del(url)
       .end(function(res) {

@@ -7,7 +7,7 @@ var expect = require('expect.js')
   , neoprene = require(libpath)
   , Schema = require(libpath + '/schema');
 
-neoprene.connect('http://localhost:7476');
+neoprene.connect('http://localhost:7475');
 
 var query
   , CypherNodeSchema

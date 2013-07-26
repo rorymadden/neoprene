@@ -1,0 +1,241 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node', '/usr/local/bin/npm', 'publish' ]
+2 info using npm@1.2.25
+3 info using node@v0.10.10
+4 verbose publish [ '.' ]
+5 verbose read json /Users/rorymadden/Dropbox/Sites/projects/neoprene/package.json
+6 verbose cache add [ '.', null ]
+7 verbose cache add name=undefined spec="." args=[".",null]
+8 verbose parsed url { protocol: null,
+8 verbose parsed url   slashes: null,
+8 verbose parsed url   auth: null,
+8 verbose parsed url   host: null,
+8 verbose parsed url   port: null,
+8 verbose parsed url   hostname: null,
+8 verbose parsed url   hash: null,
+8 verbose parsed url   search: null,
+8 verbose parsed url   query: null,
+8 verbose parsed url   pathname: '.',
+8 verbose parsed url   path: '.',
+8 verbose parsed url   href: '.' }
+9 silly lockFile 3a52ce78- .
+10 verbose lock . /Users/rorymadden/.npm/3a52ce78-.lock
+11 verbose read json package.json
+12 verbose tar pack [ '/var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz',
+12 verbose tar pack   '.' ]
+13 verbose tarball /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+14 verbose folder .
+15 info prepublish neoprene@0.2.0
+16 silly lockFile 3a52ce78- .
+17 verbose lock . /Users/rorymadden/.npm/3a52ce78-.lock
+18 silly lockFile 8ce13dad-49682-0-8450432643294334-tmp-tgz /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+19 verbose lock /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz /Users/rorymadden/.npm/8ce13dad-49682-0-8450432643294334-tmp-tgz.lock
+20 silly lockFile 3a52ce78- .
+21 silly lockFile 3a52ce78- .
+22 silly lockFile 8ce13dad-49682-0-8450432643294334-tmp-tgz /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+23 silly lockFile 8ce13dad-49682-0-8450432643294334-tmp-tgz /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+24 verbose tar unpack /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+25 silly lockFile 61acf11d-49682-0-8450432643294334-package /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+26 verbose lock /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package /Users/rorymadden/.npm/61acf11d-49682-0-8450432643294334-package.lock
+27 silly lockFile 8ce13dad-49682-0-8450432643294334-tmp-tgz /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+28 verbose lock /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz /Users/rorymadden/.npm/8ce13dad-49682-0-8450432643294334-tmp-tgz.lock
+29 silly gunzTarPerm modes [ '755', '644' ]
+30 silly gunzTarPerm extractEntry package.json
+31 silly gunzTarPerm extractEntry .npmignore
+32 silly gunzTarPerm extractEntry README.md
+33 silly gunzTarPerm extractEntry LICENSE
+34 silly gunzTarPerm extractEntry Makefile
+35 silly gunzTarPerm extractEntry .travis.yml
+36 silly gunzTarPerm extractEntry docs/index.html
+37 silly gunzTarPerm extractEntry docs/lib/schema/array.js.html
+38 silly gunzTarPerm extractEntry docs/lib/schema/boolean.js.html
+39 silly gunzTarPerm extractEntry docs/lib/schema/date.js.html
+40 silly gunzTarPerm extractEntry docs/lib/schema/index.js.html
+41 silly gunzTarPerm extractEntry docs/lib/schema/mixed.js.html
+42 silly gunzTarPerm extractEntry docs/lib/schema/number.js.html
+43 silly gunzTarPerm extractEntry docs/lib/schema/string.js.html
+44 silly gunzTarPerm extractEntry docs/lib/error.js.html
+45 silly gunzTarPerm extractEntry docs/lib/graphObject.js.html
+46 silly gunzTarPerm extractEntry docs/lib/index.js.html
+47 silly gunzTarPerm extractEntry docs/lib/model.js.html
+48 silly gunzTarPerm extractEntry docs/lib/path.js.html
+49 silly gunzTarPerm extractEntry docs/lib/errors/cast.js.html
+50 silly gunzTarPerm extractEntry docs/lib/errors/validation.js.html
+51 silly gunzTarPerm extractEntry docs/lib/errors/validator.js.html
+52 silly gunzTarPerm extractEntry docs/lib/schema.js.html
+53 silly gunzTarPerm extractEntry docs/lib/schematype.js.html
+54 silly gunzTarPerm extractEntry docs/lib/statemachine.js.html
+55 silly gunzTarPerm extractEntry docs/lib/types/array.js.html
+56 silly gunzTarPerm extractEntry docs/lib/utils.js.html
+57 silly gunzTarPerm extractEntry docs/lib/virtualtype.js.html
+58 silly gunzTarPerm extractEntry dump.rdb
+59 silly gunzTarPerm extractEntry lib/error.js
+60 silly gunzTarPerm extractEntry lib/graphObject.js
+61 silly gunzTarPerm extractEntry lib/index.js
+62 silly gunzTarPerm extractEntry lib/model.js
+63 silly gunzTarPerm extractEntry lib/path.js
+64 silly gunzTarPerm extractEntry lib/utils.js
+65 silly gunzTarPerm extractEntry lib/schema.js
+66 silly gunzTarPerm extractEntry lib/schematype.js
+67 silly gunzTarPerm extractEntry lib/statemachine.js
+68 silly gunzTarPerm extractEntry lib/virtualtype.js
+69 silly gunzTarPerm extractEntry lib/types/array.js
+70 silly gunzTarPerm extractEntry lib/errors/cast.js
+71 silly gunzTarPerm extractEntry lib/errors/validation.js
+72 silly gunzTarPerm extractEntry lib/errors/validator.js
+73 silly gunzTarPerm extractEntry lib/schema/array.js
+74 silly gunzTarPerm extractEntry lib/schema/boolean.js
+75 silly gunzTarPerm extractEntry lib/schema/date.js
+76 silly gunzTarPerm extractEntry lib/schema/index.js
+77 silly gunzTarPerm extractEntry lib/schema/mixed.js
+78 silly gunzTarPerm extractEntry lib/schema/number.js
+79 silly gunzTarPerm extractEntry lib/schema/string.js
+80 silly gunzTarPerm extractEntry CHANGELOG.md
+81 silly gunzTarPerm extractEntry test/cypher.js
+82 silly gunzTarPerm extractEntry test/node.js
+83 silly gunzTarPerm extractEntry test/schema.js
+84 silly gunzTarPerm extractEntry test/mocha.opts
+85 verbose read json /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package/package.json
+86 silly lockFile 61acf11d-49682-0-8450432643294334-package /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+87 silly lockFile 61acf11d-49682-0-8450432643294334-package /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+88 silly lockFile 8ce13dad-49682-0-8450432643294334-tmp-tgz /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+89 silly lockFile 8ce13dad-49682-0-8450432643294334-tmp-tgz /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/tmp.tgz
+90 verbose from cache /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package/package.json
+91 verbose tar pack [ '/Users/rorymadden/.npm/neoprene/0.2.0/package.tgz',
+91 verbose tar pack   '/var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package' ]
+92 verbose tarball /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+93 verbose folder /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+94 silly lockFile 61acf11d-49682-0-8450432643294334-package /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+95 verbose lock /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package /Users/rorymadden/.npm/61acf11d-49682-0-8450432643294334-package.lock
+96 silly lockFile 6ead0fde-n-npm-neoprene-0-2-0-package-tgz /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+97 verbose lock /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz /Users/rorymadden/.npm/6ead0fde-n-npm-neoprene-0-2-0-package-tgz.lock
+98 silly lockFile 61acf11d-49682-0-8450432643294334-package /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+99 silly lockFile 61acf11d-49682-0-8450432643294334-package /var/folders/zt/n3vtqzhn1_s0v0q0p13p3wcc0000gn/T/npm-53793/1374851949682-0.8450432643294334/package
+100 silly lockFile 6ead0fde-n-npm-neoprene-0-2-0-package-tgz /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+101 silly lockFile 6ead0fde-n-npm-neoprene-0-2-0-package-tgz /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+102 silly lockFile 63015637-adden-npm-neoprene-0-2-0-package /Users/rorymadden/.npm/neoprene/0.2.0/package
+103 verbose lock /Users/rorymadden/.npm/neoprene/0.2.0/package /Users/rorymadden/.npm/63015637-adden-npm-neoprene-0-2-0-package.lock
+104 silly lockFile 63015637-adden-npm-neoprene-0-2-0-package /Users/rorymadden/.npm/neoprene/0.2.0/package
+105 silly lockFile 63015637-adden-npm-neoprene-0-2-0-package /Users/rorymadden/.npm/neoprene/0.2.0/package
+106 verbose tar unpack /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+107 silly lockFile 63015637-adden-npm-neoprene-0-2-0-package /Users/rorymadden/.npm/neoprene/0.2.0/package
+108 verbose lock /Users/rorymadden/.npm/neoprene/0.2.0/package /Users/rorymadden/.npm/63015637-adden-npm-neoprene-0-2-0-package.lock
+109 silly lockFile 6ead0fde-n-npm-neoprene-0-2-0-package-tgz /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+110 verbose lock /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz /Users/rorymadden/.npm/6ead0fde-n-npm-neoprene-0-2-0-package-tgz.lock
+111 silly gunzTarPerm modes [ '755', '644' ]
+112 silly gunzTarPerm extractEntry package.json
+113 silly gunzTarPerm extractEntry .npmignore
+114 silly gunzTarPerm extractEntry README.md
+115 silly gunzTarPerm extractEntry LICENSE
+116 silly gunzTarPerm extractEntry Makefile
+117 silly gunzTarPerm extractEntry .travis.yml
+118 silly gunzTarPerm extractEntry docs/index.html
+119 silly gunzTarPerm extractEntry docs/lib/schema/array.js.html
+120 silly gunzTarPerm extractEntry docs/lib/schema/boolean.js.html
+121 silly gunzTarPerm extractEntry docs/lib/schema/date.js.html
+122 silly gunzTarPerm extractEntry docs/lib/schema/index.js.html
+123 silly gunzTarPerm extractEntry docs/lib/schema/mixed.js.html
+124 silly gunzTarPerm extractEntry docs/lib/schema/number.js.html
+125 silly gunzTarPerm extractEntry docs/lib/schema/string.js.html
+126 silly gunzTarPerm extractEntry docs/lib/error.js.html
+127 silly gunzTarPerm extractEntry docs/lib/graphObject.js.html
+128 silly gunzTarPerm extractEntry docs/lib/index.js.html
+129 silly gunzTarPerm extractEntry docs/lib/model.js.html
+130 silly gunzTarPerm extractEntry docs/lib/path.js.html
+131 silly gunzTarPerm extractEntry docs/lib/errors/cast.js.html
+132 silly gunzTarPerm extractEntry docs/lib/errors/validation.js.html
+133 silly gunzTarPerm extractEntry docs/lib/errors/validator.js.html
+134 silly gunzTarPerm extractEntry docs/lib/schema.js.html
+135 silly gunzTarPerm extractEntry docs/lib/schematype.js.html
+136 silly gunzTarPerm extractEntry docs/lib/statemachine.js.html
+137 silly gunzTarPerm extractEntry docs/lib/types/array.js.html
+138 silly gunzTarPerm extractEntry docs/lib/utils.js.html
+139 silly gunzTarPerm extractEntry docs/lib/virtualtype.js.html
+140 silly gunzTarPerm extractEntry dump.rdb
+141 silly gunzTarPerm extractEntry lib/error.js
+142 silly gunzTarPerm extractEntry lib/graphObject.js
+143 silly gunzTarPerm extractEntry lib/index.js
+144 silly gunzTarPerm extractEntry lib/model.js
+145 silly gunzTarPerm extractEntry lib/path.js
+146 silly gunzTarPerm extractEntry lib/utils.js
+147 silly gunzTarPerm extractEntry lib/schema.js
+148 silly gunzTarPerm extractEntry lib/schematype.js
+149 silly gunzTarPerm extractEntry lib/statemachine.js
+150 silly gunzTarPerm extractEntry lib/virtualtype.js
+151 silly gunzTarPerm extractEntry lib/types/array.js
+152 silly gunzTarPerm extractEntry lib/errors/cast.js
+153 silly gunzTarPerm extractEntry lib/errors/validation.js
+154 silly gunzTarPerm extractEntry lib/errors/validator.js
+155 silly gunzTarPerm extractEntry lib/schema/array.js
+156 silly gunzTarPerm extractEntry lib/schema/boolean.js
+157 silly gunzTarPerm extractEntry lib/schema/date.js
+158 silly gunzTarPerm extractEntry lib/schema/index.js
+159 silly gunzTarPerm extractEntry lib/schema/mixed.js
+160 silly gunzTarPerm extractEntry lib/schema/number.js
+161 silly gunzTarPerm extractEntry lib/schema/string.js
+162 silly gunzTarPerm extractEntry CHANGELOG.md
+163 silly gunzTarPerm extractEntry test/cypher.js
+164 silly gunzTarPerm extractEntry test/node.js
+165 silly gunzTarPerm extractEntry test/schema.js
+166 silly gunzTarPerm extractEntry test/mocha.opts
+167 verbose read json /Users/rorymadden/.npm/neoprene/0.2.0/package/package.json
+168 silly lockFile 63015637-adden-npm-neoprene-0-2-0-package /Users/rorymadden/.npm/neoprene/0.2.0/package
+169 silly lockFile 63015637-adden-npm-neoprene-0-2-0-package /Users/rorymadden/.npm/neoprene/0.2.0/package
+170 silly lockFile 6ead0fde-n-npm-neoprene-0-2-0-package-tgz /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+171 silly lockFile 6ead0fde-n-npm-neoprene-0-2-0-package-tgz /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz
+172 verbose from cache /Users/rorymadden/.npm/neoprene/0.2.0/package/package.json
+173 verbose chmod /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz 644
+174 verbose chown /Users/rorymadden/.npm/neoprene/0.2.0/package.tgz [ 501, 20 ]
+175 silly lockFile 3a52ce78- .
+176 silly publish { name: 'neoprene',
+176 silly publish   description: 'Neo4j wrapper (REST API client) for Node.js',
+176 silly publish   version: '0.2.0',
+176 silly publish   author: { name: 'Rory Madden', email: 'rorymadden@gmail.com' },
+176 silly publish   homepage: 'http://rorymadden.github.com/neoprene',
+176 silly publish   contributors: [ { name: 'Rory Madden', email: 'rorymadden@gmail.com' } ],
+176 silly publish   private: false,
+176 silly publish   main: './lib',
+176 silly publish   dependencies: { superagent: '0.12.x', async: '0.1.x', hooks: '0.2.1' },
+176 silly publish   devDependencies: { 'expect.js': '~0.1.2', mocha: '~1.3.0', assert: '*' },
+176 silly publish   engines: { node: '>= 0.6' },
+176 silly publish   scripts: { test: 'make test', docs: 'make docs' },
+176 silly publish   keywords: [ 'neo4j', 'graph', 'database', 'driver', 'rest', 'api', 'client' ],
+176 silly publish   bugs: { url: 'http://github.com/rorymadden/neoprene/issues' },
+176 silly publish   licenses:
+176 silly publish    [ { type: 'Apache License, Version 2.0',
+176 silly publish        url: 'http://www.apache.org/licenses/LICENSE-2.0.html' } ],
+176 silly publish   repository:
+176 silly publish    { type: 'git',
+176 silly publish      url: 'http://github.com/rorymadden/neoprene.git' },
+176 silly publish   readme: '# Neoprene\n\nNeo4j Object Modelling for Node.js\n\nAcknowledgements:\nThis library is based heavily on the mongoose ORM for mongodb. The neo4j REST API was based on the \'node-neo4j\' library.\n\n\n## Installation\n\n    npm install neoprene\n\n\n## Usage\n\n```js\nvar neoprene = require(\'neoprene\');\nneoprene.connect(\'http://localhost:7474\');\n```\n\nIf you have used mongoose before there are a few things which need to be handled differently. \n\nFirstly Node has two types of objects: Nodes and Relationships. When specifying a new model you need to identify the model type that you want.\n\n***Note***\nSpecifying indexes in Schemas does not work at present. Please see the issues section - pull requests welcome.\n\n```js\nvar TestNodeSchema = new Schema({\n  name: { type:String }\n})\nvar TestNode = neoprene.model(\'node\', \'TestNode\', TestNodeSchema)\n\nvar node = new TestNode({name: \'test\'})\nnode.save(function(err, node){\n  ....\n});\n\nvar node2 = new TestNode({name: \'test2\'})\nnode2.save(function(err, node){\n  ....\n});\n```\n\nInstead of creating joins between tables you need to create relationships. Relationships need a direction. You can create relationships To or From another node.\n\n```js\nvar FollowsSchema = new Schema({\n  start: { type:Date, required: true },\n  end: { type:Date, required: true }\n});\nneoprene.model(\'relationship\', \'follows\', FollowsSchema);\n\nvar startDate = new Date(2013, 0, 16);\nvar endDate = new Date(2014, 0, 16);\n\nnode.createRelationshipTo(node2, \'follows\', {start: startDate, end: endDate}, function(err, rel){\n  ...\n});\n```\n\nYou often want to create a relationship when you are creating a node. It wouldn\'t be good to make you hit the database twice. When saving a node for the first time you can add in a relationship as well. \n\n```js\nvar node1 = new TestNode({name: \'no relationship\'});\nvar node2 = new TestNode({name: \'should link to 1\'});\n\nnode1.save(function(err, savedNode){\n  // you need to supply the linked node by either id or email\n  // you need to supply a type and a direction as well\n  var rel = {id: savedNode.id, type: \'Friend\', direction: \'to\' };\n  node2.save(rel, function(err, savedNode2){\n    // other code\n  })\n})\n})\n```\n\n\nTo query / navigate around the graph you start with a single node. You can index nodes to enable quick lookup at a later time.\n\n```js\nnode.index(\'Test\', \'name\', this.name, function(err){\n  ...\n});\n\nvar myFetchedNode;\nneoprene.getIndexedNode(\'Test\', \'name\', \'test\', function(err, node){\n  myFetchedNode = node;\n})\n```\n\nOnce you have a node you can traverse the graph. You can get Relationships or Nodes. \nTo get relationships you can choose incoming, outgoing or all relationships. In addition you must specify a type or array of relationship types. \nWhen getting nodes you can use the adjacentNodes helper or the more complete traverse function. \n\n```js\nnode.getAllRelationships(\'follows\', function(err, rels){\n  ...\n})\n\nnode.adjacentNodes(\'follows\', 2, function(err, nodes){\n  ...\n})\n```\n\nThe final way to query the graph is to run a Cypher query against the graph.\n\n```js\nvar query = [\n  \'START user=node({userId})\',\n  \'MATCH (user) -[:likes]-> (other)\',\n  \'RETURN other\'\n].join(\'\\n\');\n\nvar params = {\n  userId: currentUser.id\n};\n\nneoprene.query(query, params, function (err, results) {\n  if (err) throw err;\n  var likes = results.map(function (result) {\n    return result[\'other\'];\n  });\n  // ...\n});\n```\n\nIf you\'re new to Neo4j, read the [Getting Started][neo4j-getting-started] page.\n\n\n[neo4j]: http://neo4j.org/\n[neo4j-rest-api]: http://docs.neo4j.org/chunked/stable/rest-api.html\n\n[neo4j-getting-started]: http://wiki.neo4j.org/content/Getting_Started_With_Neo4j_Server\n',
+176 silly publish   readmeFilename: 'README.md',
+176 silly publish   _id: 'neoprene@0.2.0',
+176 silly publish   dist: { shasum: 'c3398e586b0cf4a2917ba5a5bad5d476bb84c131' },
+176 silly publish   _from: '.' }
+177 verbose url raw neoprene
+178 verbose url resolving [ 'https://registry.npmjs.org/', './neoprene' ]
+179 verbose url resolved https://registry.npmjs.org/neoprene
+180 info trying registry request attempt 1 at 16:20:11
+181 http PUT https://registry.npmjs.org/neoprene
+182 http 409 https://registry.npmjs.org/neoprene
+183 verbose url raw neoprene
+184 verbose url resolving [ 'https://registry.npmjs.org/', './neoprene' ]
+185 verbose url resolved https://registry.npmjs.org/neoprene
+186 info trying registry request attempt 1 at 16:20:12
+187 http GET https://registry.npmjs.org/neoprene
+188 http 200 https://registry.npmjs.org/neoprene
+189 error publish fail Cannot publish over existing version.
+189 error publish fail Update the 'version' field in package.json and try again.
+189 error publish fail
+189 error publish fail If the previous version was published in error, see:
+189 error publish fail     npm help unpublish
+189 error publish fail
+189 error publish fail To automatically increment version numbers, see:
+189 error publish fail     npm help version
+190 error System Darwin 12.4.0
+191 error command "node" "/usr/local/bin/npm" "publish"
+192 error cwd /Users/rorymadden/Dropbox/Sites/projects/neoprene
+193 error node -v v0.10.10
+194 error npm -v 1.2.25
+195 error code EPUBLISHCONFLICT
+196 verbose exit [ 1, true ]

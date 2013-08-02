@@ -170,6 +170,21 @@ describe('model create', function(){
       });
     });
   });
+  it('should create a node with a relationship based on node id with relationship data', function(done){
+    var userRel1 = new User(userData[0]);
+    var userRel2 = new User({first: 'IDTest', alias: 'test', email: 'idtest@test.com', password: 'whatever'});
+    userRel2.save(function(err, res){
+      var relType = { nodeLabel: 'User', indexField: '_id', indexValue: res._id, type: 'Friend', direction: 'from', data: { name: 'RelName', other: true} };
+      userRel1.save(relType, function(err, res){
+        expect(err).to.be(null);
+        expect(res).to.be.an('object');
+        expect(res.node.self).to.be.a('string');
+        expect(res.rel.type).to.be('Friend');
+        // need to test response direction
+        done();
+      });
+    });
+  });
   it('should create a node with a relationship based on email', function(done){
     var userRel1 = new User(userData[0]);
     var userRel2 = new User({first: 'Unique', alias: 'bug', email: 'unique@test.com', password: 'unique'});
@@ -504,6 +519,66 @@ describe('model read', function(){
       done();
     });
   });
+  it('should get all outgoing relationships - limit 2', function(done){
+    user1.getOutgoingRelationships(null, 'User', {}, {limit: 2}, function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(2);
+      expect(results.nodes.length).to.be(2);
+      done();
+    });
+  });
+  it('should get all outgoing relationships which satisfy data condition', function(done){
+    user1.getOutgoingRelationships(null, 'User', {tip: 'likes'}, function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(1);
+      expect(results.nodes.length).to.be(1);
+      done();
+    });
+  });
+  it('should get all incoming relationships - limit 2', function(done){
+    user1.getIncomingRelationships(null, 'User', {}, {limit: 2}, function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(1);
+      expect(results.nodes.length).to.be(1);
+      done();
+    });
+  });
+  it('should get all incoming relationships which satisfy data condition', function(done){
+    user1.getIncomingRelationships(null, 'User', {tip: 'likes'}, function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(1);
+      expect(results.nodes.length).to.be(1);
+      done();
+    });
+  });
+  it('should get all relationships - limit 2', function(done){
+    user1.getAllRelationships(null, 'User', {}, {limit: 2}, function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(2);
+      expect(results.nodes.length).to.be(2);
+      done();
+    });
+  });
+  it('should get all relationships which satisfy data condition', function(done){
+    user1.getAllRelationships(null, 'User', {tip: 'likes'}, function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(2);
+      expect(results.nodes.length).to.be(2);
+      done();
+    });
+  });
   // it('should get nodes via relationships', function(done){
   //   user1.getAdjacentNodes('follows', function(err, nodes) {
   //     expect(nodes).to.be.an('array');
@@ -682,28 +757,36 @@ describe('model update', function(){
   });
 });
 
-describe("model queries", function(){
+describe('model queries', function(){
   var id;
   it("should find based on conditions", function(done){
     User.find({email: "mail@test.com"}, function(err, nodes){
       expect(err).to.be(null);
-      expect(nodes.length).to.be(2);
+      expect(nodes.length).to.be(3);
       expect(nodes[0].email).to.be("mail@test.com");
       done();
     });
   });
+  // it("should find based on number conditions", function(done){
+  //   User.find({number: "42"}, function(err, nodes){
+  //     expect(err).to.be(null);
+  //     expect(nodes.length).to.be(3);
+  //     expect(nodes[0].email).to.be("mail@test.com");
+  //     done();
+  //   });
+  // });
   // TODO: turn this into a query response
   it("should return all for the label if no conditions", function(done){
     User.find(function(err, users){
       expect(err).to.not.exist;
-      expect(users.length).to.be(7);
+      expect(users.length).to.be(9);
       done();
     });
   });
   it("should return limited fields if fields are specified", function(done){
     User.find({email: "mail@test.com"}, 'first last', function(err, nodes){
       expect(err).to.be(null);
-      expect(nodes.length).to.be(2);
+      expect(nodes.length).to.be(3);
       expect(nodes[0].email).to.be.undefined;
       expect(nodes[0].gender).to.be.undefined;
       expect(nodes[0].first).to.not.be(null);
@@ -739,7 +822,7 @@ describe("model queries", function(){
   it("should skip records with skip option", function(done){
     User.find({email: "mail@test.com"}, '', {skip:1}, function(err, nodes){
       expect(err).to.be(null);
-      expect(nodes.length).to.be(1);
+      expect(nodes.length).to.be(2);
       expect(nodes[0].email).to.be("mail@test.com");
       done();
     });

@@ -3,3 +3,4 @@ node_modules
 coverage.html
 lib-cov
 dump.rdb
+npm-debug.log

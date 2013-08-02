@@ -28,6 +28,7 @@ Firstly Node has two types of objects: Nodes and Relationships. When specifying 
 
 ***Note***
 Specifying unique indexes in Schemas does not work until CONSTRAINTS get added to neo4j
+There is also an issue with indexing boolean values. Don't try it. Recommendation is to store the values as strings.
 
 ```js
 var TestNodeSchema = new Schema({
@@ -120,7 +121,7 @@ See the docs for more information.
 ```js
 node.getAllRelationships('follows', function(err, results){
     //results.rels is an array of rels (rel has a format (type: 'Follows', direction: 'in', data: {})
-    
+
     //results.nodes is an array of nodes
   ...
 })

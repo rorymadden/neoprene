@@ -88,9 +88,10 @@ describe('cypher queries', function() {
   });
   it('should return no results with query', function(done) {
     query = 'START n=node(' + user0._id + ') MATCH n-[:bad]->r RETURN n';
-    neoprene.query(function(err, results) {
-      expect(err).to.not.be(null);
-      expect(results).to.be(null);
+    neoprene.query(query, function(err, results) {
+      expect(err).to.be(null);
+      expect(results).to.be.a('array');
+      expect(results.length).to.be(0);
       done();
     });
   });
@@ -120,6 +121,49 @@ describe('cypher queries', function() {
       expect(results[1]).to.be.an('object');
       expect(results[1]['n']).to.be.an('object');
       expect(results[1]['n'].data).to.eql(user1.data);
+      done();
+    });
+  });
+  it("should allow batch queries", function(done){
+    query = [{
+      'method':'POST',
+      'to':'/cypher',
+      'body':{
+        'params':{'user0Id': user0._id, 'user1Id': user1._id},
+        'query':'START u0 = node({user0Id}), u1 = node({user1Id})' +
+                ' CREATE (u0)<-[r:cypherfollows]-(u1)' +
+                ' RETURN r'
+      },
+      'id':1
+    },{
+      'method':'POST',
+      'to':'/cypher',
+      'body':{
+        'params':{'user0Id': user0._id, 'user1Id': user1._id, 'relationshipType': 'relationship2'},
+        'query':'START u0 = node({user0Id}), u1 = node({user1Id})' +
+                ' CREATE (u0)<-[r2:cypherfollows {relationshipType: {relationshipType}}]-(u1)' +
+                ' RETURN r2'
+      },
+      'id':2
+    }];
+
+    neoprene.batchQuery(query, function(err, results) {
+      expect(err).to.be(null);
+      expect(results).to.be.an('array');
+      expect(results).to.have.length(2);
+
+      expect(results[0]).to.be.an('object');
+      expect(results[0]['r']).to.be.an('object');
+      expect(results[1]).to.be.an('object');
+      expect(results[1]['r']).to.be.an('object');
+      expect(results[1]['r']._doc.relationshipType).to.eql('relationship2');
+      done();
+    });
+  });
+  it("should fail batch query without a query", function(done){
+    neoprene.batchQuery(function(err, results) {
+      expect(err).to.not.be(null);
+      expect(results).to.be(null);
       done();
     });
   });

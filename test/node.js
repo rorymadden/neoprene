@@ -431,6 +431,23 @@ describe('model read', function(){
       done();
     });
   });
+  it('should get all relationships of a type with array input', function(done){
+    user1.getAllRelationships(['likes', 'follows'], function(err, results){
+      expect(err).to.be(null);
+      expect(results.rels).to.be.an('array');
+      expect(results.nodes).to.be.an('array');
+      expect(results.rels.length).to.be(3);
+      expect(results.nodes.length).to.be(3);
+      expect(results.nodes[0]).to.be.an('object');
+      expect(results.nodes[0]._id).to.be.a('number');
+      expect(results.nodes[0].self).to.be.a('string');
+      expect(results.rels[0]._doc._id).to.be.a('number');
+      expect(results.rels[0]._doc.direction).to.be.a('string');
+      expect(results.rels[0]._doc.type).to.be.a('string');
+      expect(results.rels[0]._doc.data).to.be.an('object');
+      done();
+    });
+  });
   it('should get not return results if no matches', function(done){
     user1.getAllRelationships('badtype', function(err, results){
       expect(err).to.be(null);
@@ -874,6 +891,40 @@ describe('model queries', function(){
   });
 
 });
+// describe('queries', function(){
+//   before(function(){
+//     var query = 'START n=node({userId}) MATCH u-[r]-o RETURN r, o';
+//     var params = {
+//       userId: user1._id
+//     }
+//   });
+//   it("should allow a user query with params", function(done){
+//     User.query(query, params, function(err, results){
+//       expect(err).to.not.exist;
+//       expect(results.r).to.exist;
+//       expect(results.o).to.exist;
+//     });
+//   });
+//   it("should allow a user query with no params", function(done){
+//     done()
+//   });
+//   it("should fail if no query provided", function(done){
+//     User.query(params, function(err, results){
+//       expect(err).to.exist;
+//     });
+//   });
+//   it("should fail if no param provided", function(done){
+//     User.query(query, function(err, results){
+//       expect(err).to.exist;
+//     });
+//   });
+//   it("should allow a batch query", function(done){
+//     done()
+//   });
+//   it("should fail if no query provided to batch", function(done){
+//     done()
+//   });
+// });
 describe('model delete', function(){
   it('should remove a single relationship', function(done){
     user2.getAllRelationships(function(err, relationships){

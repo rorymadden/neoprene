@@ -46,10 +46,17 @@ function createCypherUsers(callback) {
   async.whilst(
     function () { return count < 10; },
     function (cb) {
-      var user = new CypherUser({ name: 'user' + count++});
-      user.save(function(err, node){
-        users.push(node);
-        cb();
+      // var user = new CypherUser({ name: 'user' + count++});
+      // user.save(function(err, node){
+      //   users.push(node);
+      //   cb();
+      // });
+      CypherUser.create({ name: 'user' + count++}, function(err, user){
+        if(err) callback(err);
+        else {
+          users.push(user);
+          cb();
+        }
       });
     },
     function (err) {
@@ -73,9 +80,7 @@ function createCypherUsers(callback) {
 describe('cypher queries', function() {
   before(function(done){
     CypherNodeSchema = new Schema({name: String});
-    CypherRelSchema = new Schema();
-    CypherUser = neoprene.model('node', 'CypherUser', CypherNodeSchema);
-    CypherFollows = neoprene.model('relationship', 'cypherfollows', CypherRelSchema);
+    CypherUser = neoprene.model('CypherUser', CypherNodeSchema);
     createCypherUsers(done);
   });
   it('should fail with no query', function(done) {
@@ -156,7 +161,7 @@ describe('cypher queries', function() {
       expect(results[0]['r']).to.be.an('object');
       expect(results[1]).to.be.an('object');
       expect(results[1]['r']).to.be.an('object');
-      expect(results[1]['r']._doc.relationshipType).to.eql('relationship2');
+      expect(results[1]['r'].data.relationshipType).to.eql('relationship2');
       done();
     });
   });
@@ -183,7 +188,7 @@ describe('cypher queries', function() {
 
         expect(results[1]).to.be.an('object');
         expect(results[1]['r']).to.be.an('object');
-        expect(results[1]['r'].type).to.be('cypherfollows');
+        expect(results[1]['r']._type).to.be('cypherfollows');
         expect(results[1]['m.name']).to.equal(user8.name);
         done();
       });
@@ -200,7 +205,7 @@ describe('cypher queries', function() {
 
         expect(results[1]).to.be.an('object');
         expect(results[1]['r']).to.be.an('object');
-        expect(results[1]['r'].type).to.be('cypherfollows');
+        expect(results[1]['r']._type).to.be('cypherfollows');
         expect(results[1]['m.name']).to.equal(user5.name);
         done();
       });

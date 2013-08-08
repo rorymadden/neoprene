@@ -5,6 +5,10 @@ test:
 	@NODE_ENV=test mocha $(TESTS) \
 		--reporter $(REPORTER)
 
+test-brk:
+	@NODE_ENV=test mocha --debug-brk $(TESTS) \
+		--reporter $(REPORTER)
+
 test-cov: lib-cov
 	@LIB_COV=1 $(MAKE) test REPORTER=html-cov > coverage.html
 

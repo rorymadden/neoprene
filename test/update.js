@@ -28,7 +28,7 @@ var user1 = {}
   , Schedule
   , Activity;
 
-describe.only('model update2', function(){
+describe('model update', function(){
   before(function(done){
     var query = 'start n=node(*) match n-[r?]->() where id(n) <> 0 delete r,n';
     var params = {};
@@ -102,10 +102,10 @@ describe.only('model update2', function(){
         first: {type: String, required: true, lowercase: true, trim: true}
       });
       var Model1 = neoprene.model('Model1', schema1);
-      Model1.create({first: '  BIG  '}, function(err, model){
+      Model1.create({first: '  BIG  '}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        Model1.update(model.toJSON(), {first: null}, function(err, model){
+        model.update(user1._id, {first: null}, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -118,10 +118,10 @@ describe.only('model update2', function(){
         email: {type: "string", trim:true, lowercase:true, match: emailRegEx},
       });
       var Model2 = neoprene.model('Model2', schema2);
-      Model2.create({email: '    MAIL@TEST.COM   '}, function(err, model){
+      Model2.create({email: '    MAIL@TEST.COM   '}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        Model2.update(model.toJSON(), {email: '    MAILTEST.COM   '}, function(err, model){
+        model.update(user1._id, {email: '    MAILTEST.COM   '}, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -133,13 +133,13 @@ describe.only('model update2', function(){
         number: {type: Number, min: 1, max: 50}
       });
       var Model3 = neoprene.model('Model3', schema3);
-      Model3.create({number: 30}, function(err, model){
+      Model3.create({number: 30}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        Model3.update(model.toJSON(), {number:51}, function(err, model2){
+        model.update(user1._id, {number:51}, function(err, model2){
           expect(err).to.be.ok();
           expect(model2).to.not.be.ok();
-          Model3.update(model.toJSON(), {number:0}, function(err, model3){
+          model.update(user1._id, {number:0}, function(err, model3){
             expect(err).to.be.ok();
             expect(model3).to.not.be.ok();
             done();
@@ -153,10 +153,10 @@ describe.only('model update2', function(){
         gender: {type: String, enum: GENDER},
       });
       var Model4 = neoprene.model('Model4', schema4);
-      Model4.create({gender: 'male'}, function(err, model){
+      Model4.create({gender: 'male'}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        Model4.update(model.toJSON(), {gender: 'blue'}, function(err, model){
+        model.update(user1._id, {gender: 'blue'}, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -169,10 +169,10 @@ describe.only('model update2', function(){
         gender: {type: String, lowercase: true, trim: true, enum: GENDER},
       });
       var Model5 = neoprene.model('Model5', schema5);
-      Model5.create({gender: '  MALE  '}, function(err, model){
+      Model5.create({gender: '  MALE  '}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        Model5.update(model.toJSON(), {gender: 'blue'}, function(err, model){
+        model.update(user1._id, {gender: 'blue'}, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -184,7 +184,7 @@ describe.only('model update2', function(){
         second: {type: String, index:{ unique: true}},
       });
       var Model7 = neoprene.model('Model7', schema7);
-      Model7.create({second:'unique'}, function(err, model){
+      Model7.create({second:'unique'}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model.second).to.be.equal('unique');
         request
@@ -194,11 +194,11 @@ describe.only('model update2', function(){
             expect(res.body.length).to.be.equal(1);
             expect(res.body[0]['property-keys'].length).to.be(1);
             expect(res.body[0]['property-keys'][0]).to.be.equal('second');
-            Model7.create({second:'unique2'}, function(err, model2){
+            Model7.create({second:'unique2'}, user1._id, function(err, model2){
               expect(err).to.not.be.ok();
               expect(model2).to.be.ok();
               console.log(model2)
-              Model7.update(model2.toJSON(), {second:'unique'}, function(err, model3){
+              model2.update(user1._id, {second:'unique'}, function(err, model3){
                 expect(err).to.be.ok();
                 expect(model).to.not.be.ok();
                 request
@@ -214,9 +214,9 @@ describe.only('model update2', function(){
     });
   });
   describe("validations pass", function(){
-    it("should allow an update: user and relationship events", function(done){
+    it("should allow an update: user, node and relationship events", function(done){
       var updates = {
-        name: 'Activity: user and relationship events'
+        activityName: 'Activity: user, node and relationship events'
       };
 
       var options = {
@@ -224,18 +224,17 @@ describe.only('model update2', function(){
           relationshipNode: {
             id: schedule1._id,
             type: 'Schedule'
-          },
-          user: true
+          }
         }
       };
 
-      Activity.update(activity1.toJSON(), updates, options, function(err, activity){
+      activity1.update(user1._id, updates, options, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
           expect(results.rels[0]._type).to.be.equal('LATEST_EVENT');
           results.nodes[0].getAllRelationships(function(err, results2){
-            expect(results2.resl.length).to.be.equal(8);
+            expect(results2.rels.length).to.be.equal(9);
             var relTypes = [];
             var counts = {};
             for(var i=0, len = results2.rels.length; i< len; i++){
@@ -254,24 +253,18 @@ describe.only('model update2', function(){
         });
       });
     });
-    it("should allow an update: user events", function(done){
+    it("should allow an update: node and user events", function(done){
       var updates = {
-        name: 'Activity: user events'
+        activityName: 'Activity: node and user events'
       };
 
-      var options = {
-        eventNodes: {
-          user: true
-        }
-      };
-
-      Activity.update(activity1.toJSON(), updates, options, function(err, activity){
+      activity1.update(user1._id, updates, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
           expect(results.rels[0]._type).to.be.equal('LATEST_EVENT');
           results.nodes[0].getAllRelationships(function(err, results2){
-            expect(results2.resl.length).to.be.equal(5);
+            expect(results2.rels.length).to.be.equal(6);
             var relTypes = [];
             var counts = {};
             for(var i=0, len = results2.rels.length; i< len; i++){
@@ -290,7 +283,7 @@ describe.only('model update2', function(){
     });
     it("should allow an update: relationship events", function(done){
       var updates = {
-        name: 'Activity: relationship events'
+        activityName: 'Activity: node and relationship events'
       };
 
       var options = {
@@ -298,17 +291,18 @@ describe.only('model update2', function(){
           relationshipNode: {
             id: schedule1._id,
             type: 'Schedule'
-          }
+          },
+          user: false
         }
       };
 
-      Activity.update(activity1.toJSON(), updates, options, function(err, activity){
+      activity1.update(user1._id, updates, options, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
           expect(results.rels[0]._type).to.be.equal('LATEST_EVENT');
           results.nodes[0].getAllRelationships(function(err, results2){
-            expect(results2.resl.length).to.be.equal(5);
+            expect(results2.rels.length).to.be.equal(6);
             var relTypes = [];
             var counts = {};
             for(var i=0, len = results2.rels.length; i< len; i++){
@@ -327,16 +321,22 @@ describe.only('model update2', function(){
     });
     it("should allow an update: node events", function(done){
       var updates = {
-        name: 'Activity: node events'
+        activityName: 'Activity: node events'
       };
 
-      Activity.update(activity1.toJSON(), updates, function(err, activity){
+      var options = {
+        eventNodes: {
+          user: false
+        }
+      }
+
+      activity1.update(user1._id, updates, options, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
           expect(results.rels[0]._type).to.be.equal('LATEST_EVENT');
           results.nodes[0].getAllRelationships(function(err, results2){
-            expect(results2.resl.length).to.be.equal(3);
+            expect(results2.rels.length).to.be.equal(3);
             var relTypes = [];
             var counts = {};
             for(var i=0, len = results2.rels.length; i< len; i++){
@@ -353,21 +353,22 @@ describe.only('model update2', function(){
     });
     it("should allow an update: no events", function(done){
       var updates = {
-        name: 'Activity: no events'
+        activityName: 'Activity: no events'
       };
       var options = {
         eventNodes: {
-          node: false
+          node: false,
+          user: false
         }
-      }
+      };
 
-      Activity.update(activity1.toJSON(), updates, options, function(err, activity){
-        expect(activity.name).to.be.equal(updates.name);
+      activity1.update(user1._id, updates, options, function(err, activity){
+        expect(activity.activityName).to.be.equal(updates.activityName);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
           expect(results.rels[0]._type).to.be.equal('LATEST_EVENT');
           results.nodes[0].getAllRelationships(function(err, results2){
-            expect(results2.resl.length).to.be.equal(3);
+            expect(results2.rels.length).to.be.equal(3);
             var relTypes = [];
             var counts = {};
             for(var i=0, len = results2.rels.length; i< len; i++){
@@ -385,28 +386,28 @@ describe.only('model update2', function(){
   });
   describe("validations fail", function(){
     it("should fail with no updates", function(done){
-      Activity.update(activity1.toJSON(), function(err, res){
+      activity1.update(function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid relationship eventNode format", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
       var options = {
         eventNodes: {
           relationshipNode: true
         }
       };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(user1._id, updates, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid relationship eventNode format: no type", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
       var options = {
         eventNodes: {
@@ -415,14 +416,14 @@ describe.only('model update2', function(){
           }
         }
       };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(user1._id, updates, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid relationship eventNode format: no id", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
       var options = {
         eventNodes: {
@@ -431,57 +432,52 @@ describe.only('model update2', function(){
           }
         }
       };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(user1._id, updates, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid option: role", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
       var options = {
         role:true
       };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(user1._id, updates, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid options: counters", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
       var options = {
         counters: true
       };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(user1._id, updates, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid options: relationship", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
       var options = {
         relationship: true
       };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(user1._id, updates, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
     });
     it("should error on invalid relationship eventNode format: user with no user id", function(done){
       var updates = {
-        name: 'Error'
+        activityName: 'Error'
       };
-      var options = {
-        eventNodes: {
-          user: true
-        }
-      };
-      Activity.update(activity1.toJSON(), updates, options, function(err, res){
+      activity1.update(updates, function(err, res){
         expect(err).to.be.ok();
         done();
       });

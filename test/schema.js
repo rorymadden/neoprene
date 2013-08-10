@@ -996,9 +996,9 @@ describe('schemas', function(){
 
       assert.throws(function(){
         new Schema({
-            db: String
+            _db: String
         });
-      }, /`db` may not be used as a schema pathname/);
+      }, /`_db` may not be used as a schema pathname/);
 
       assert.throws(function(){
         new Schema({
@@ -1026,9 +1026,9 @@ describe('schemas', function(){
 
       assert.throws(function(){
         new Schema({
-            self: String
+            _self: String
         });
-      }, /`self` may not be used as a schema pathname/);
+      }, /`_self` may not be used as a schema pathname/);
 
     })
   })

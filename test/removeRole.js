@@ -28,11 +28,12 @@ var user1 = {}
   , user2 = {}
   , schedule1 = {}
   , activity1 = {}
+  , role1
   , User
   , Schedule
   , Activity;
 
-describe('create role', function(){
+describe('remove role', function(){
   before(function(done){
     var query = 'start n=node(*) match n-[r?]->() where id(n) <> 0 delete r,n';
     var params = {};
@@ -54,16 +55,13 @@ describe('create role', function(){
           user2 = user;
           expect(user.first).to.be.eql('Jane');
           var options = {
-            relationship: {
-              nodeLabel: 'User',
-              indexField: '_id',
-              indexValue: user1._id,
-              type: 'MEMBER',
-              direction: 'to'
-            },
-            eventNodes: {
-              user: true
-            },
+            // relationship: {
+            //   nodeLabel: 'User',
+            //   indexField: '_id',
+            //   indexValue: user1._id,
+            //   type: 'MEMBER_OF',
+            //   direction: 'to'
+            // },
             counters: [{
               node: 'user',
               field: 'countSchedules'
@@ -74,7 +72,7 @@ describe('create role', function(){
             }
           };
           Schedule.create({scheduleName: 'Schedule', activityCount: 0}, user1._id, options, function(err, schedule){
-            schedule1 = schedule.node;
+            schedule1 = schedule;
             expect(err).to.not.be.ok();
             expect(schedule).to.be.ok();
             var optionsA = {
@@ -106,30 +104,30 @@ describe('create role', function(){
     });
   });
   describe("success", function(){
-    it("should allow a role to be created: with eventNodes", function(done){
-      var role = {
-        name: 'Blue',
-        user: user1._id,
-        other: schedule1._id
-      };
-      // pass through to index._createRole
-      Schedule.createRole(role, function(err, role){
-        expect(err).to.not.be.ok();
-        expect(role._doc.role).to.be.equal('Blue');
-        schedule1.getIncomingRelationships('HAS_SCHEDULE', '_ScheduleRole', function(err, results){
-          expect(results.nodes.length).to.be(2);
-          expect(results.nodes[0]._doc.role).to.be.equal('Blue');
-          schedule1.getOutgoingRelationships('LATEST_EVENT', '_ScheduleRoleCreated', function(err, results){
-            expect(results.nodes.length).to.be(1);
-            done();
+    it("should allow a role to be removed: with eventNodes", function(done){
+      schedule1.getIncomingRelationships('HAS_SCHEDULE', '_ScheduleRole', function(err, results){
+        role1 = results.nodes[0];
+        // pass through to index._createRole
+        Schedule.removeRole(role1._id, function(err){
+          expect(err).to.not.be.ok();
+          schedule1.getIncomingRelationships('HAS_SCHEDULE', '_ScheduleRole', function(err, results){
+            expect(results.nodes.length).to.be(0);
+            schedule1.getOutgoingRelationships('LATEST_EVENT', '_ScheduleRoleRemoved', function(err, results){
+              expect(results.nodes.length).to.be(1);
+              Schedule.findById(role1._id, function(err, role){
+                expect(err).to.be.ok();
+                expect(role).to.not.be.ok();
+                done();
+              });
+            });
           });
         });
       });
     });
-    it("should allow a role to be created: without eventNodes", function(done){
+    it("should allow a role to be removed: without eventNodes", function(done){
       var role = {
         name: 'Yellow',
-        user: user1._id,
+        user: user2._id,
         other: schedule1._id
       };
       var options = {
@@ -137,14 +135,21 @@ describe('create role', function(){
       };
       // pass through to index._createRole
       Schedule.createRole(role, options, function(err, role){
+        role1 = role;
         expect(err).to.not.be.ok();
         expect(role._doc.role).to.be.equal('Yellow');
-        schedule1.getIncomingRelationships('HAS_SCHEDULE', '_ScheduleRole', function(err, results){
-          expect(results.nodes.length).to.be(3);
-          expect(results.nodes[2]._doc.role).to.be.equal('Yellow');
-          schedule1.getIncomingRelationships('EVENT_SCHEDULE', function(err, results){
-            expect(results.nodes.length).to.be(3);
-            done();
+        Schedule.removeRole(role1._id, options, function(err){
+          expect(err).to.not.be.ok();
+          schedule1.getIncomingRelationships('HAS_SCHEDULE', '_ScheduleRole', function(err, results){
+            expect(results.nodes.length).to.be(0);
+            schedule1.getOutgoingRelationships('LATEST_EVENT', '_ScheduleRoleRemoved', function(err, results){
+              expect(results.nodes.length).to.be(1);
+              Schedule.findById(role._id, function(err, role){
+                expect(err).to.be.ok();
+                expect(role).to.not.be.ok();
+                done();
+              });
+            });
           });
         });
       });
@@ -152,40 +157,7 @@ describe('create role', function(){
   });
   describe("validations fail", function(){
     it("should fail with no role", function(done){
-      Schedule.createRole(function(err, role){
-        expect(err).to.be.ok();
-        expect(role).to.not.be.ok();
-        done();
-      });
-    });
-    it("should fail with no role:user", function(done){
-      var role = {
-        name: 'Admin',
-        other: schedule1._id
-      };
-      Schedule.createRole(role, function(err, role){
-        expect(err).to.be.ok();
-        expect(role).to.not.be.ok();
-        done();
-      });
-    });
-    it("should fail with no role:other", function(done){
-      var role = {
-        name: 'Admin',
-        user: user1._id,
-      };
-      Schedule.createRole(role, function(err, role){
-        expect(err).to.be.ok();
-        expect(role).to.not.be.ok();
-        done();
-      });
-    });
-    it("should fail with no role:name", function(done){
-      var role = {
-        user: user1._id,
-        other: schedule1._id
-      };
-      Schedule.createRole(role, function(err, role){
+      Schedule.removeRole(function(err, role){
         expect(err).to.be.ok();
         expect(role).to.not.be.ok();
         done();

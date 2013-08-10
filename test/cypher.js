@@ -32,10 +32,16 @@ function createRelationships(user, callback) {
   var i1 = (i + 1) % users.length;
   var i2 = (i + 2) % users.length;
   var i3 = (i + 3) % users.length;
-  node.createRelationshipTo(users[i1], 'cypherfollows', {}, function(err, rel) {
-    node.createRelationshipTo(users[i2], 'cypherfollows', {}, function(err, rel) {
-      node.createRelationshipTo(users[i3], 'cypherfollows', {}, function(err, rel) {
-        callback();
+
+  // ISSUE here. For some reason they are failing.
+  node.createRelationshipTo({ to: users[i1], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
+    process.nextTick(function(){
+      node.createRelationshipTo({ to: users[i2], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
+        process.nextTick(function(){
+          node.createRelationshipTo({ to: users[i3], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
+            callback();
+          });
+        });
       });
     });
   });
@@ -51,7 +57,12 @@ function createCypherUsers(callback) {
       //   users.push(node);
       //   cb();
       // });
-      CypherUser.create({ name: 'user' + count++}, function(err, user){
+      var options = {
+        eventNodes: {
+          user:false
+        }
+      };
+      CypherUser.create({ name: 'user' + count++}, options, function(err, user){
         if(err) callback(err);
         else {
           users.push(user);

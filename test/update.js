@@ -179,39 +179,38 @@ describe('model update', function(){
         });
       });
     });
-    it("should fail on duplicate unique indexes", function(done){
-      var schema7 = new Schema({
-        second: {type: String, index:{ unique: true}},
-      });
-      var Model7 = neoprene.model('Model7', schema7);
-      Model7.create({second:'unique'}, user1._id, function(err, model){
-        expect(err).to.not.be.ok();
-        expect(model.second).to.be.equal('unique');
-        request
-          .get(testURL + '/db/data/schema/index/Model7')
-          .end(function(err, res){
-            expect(err).to.not.be.ok();
-            expect(res.body.length).to.be.equal(1);
-            expect(res.body[0]['property-keys'].length).to.be(1);
-            expect(res.body[0]['property-keys'][0]).to.be.equal('second');
-            Model7.create({second:'unique2'}, user1._id, function(err, model2){
-              expect(err).to.not.be.ok();
-              expect(model2).to.be.ok();
-              console.log(model2)
-              model2.update({second:'unique'}, user1._id, function(err, model3){
-                expect(err).to.be.ok();
-                expect(model).to.not.be.ok();
-                request
-                  .del(testURL + '/db/data/schema/index/Model7/second')
-                  .end(function(err, res){
-                    expect(res.status).to.be(204);
-                    done();
-                  });
-              });
-            });
-          });
-      });
-    });
+    // it("should fail on duplicate unique indexes", function(done){
+    //   var schema7 = new Schema({
+    //     second: {type: String, index:{ unique: true}},
+    //   });
+    //   var Model7 = neoprene.model('Model7', schema7);
+    //   Model7.create({second:'unique'}, user1._id, function(err, model){
+    //     expect(err).to.not.be.ok();
+    //     expect(model.second).to.be.equal('unique');
+    //     request
+    //       .get(testURL + '/db/data/schema/index/Model7')
+    //       .end(function(err, res){
+    //         expect(err).to.not.be.ok();
+    //         expect(res.body.length).to.be.equal(1);
+    //         expect(res.body[0]['property-keys'].length).to.be(1);
+    //         expect(res.body[0]['property-keys'][0]).to.be.equal('second');
+    //         Model7.create({second:'unique2'}, user1._id, function(err, model2){
+    //           expect(err).to.not.be.ok();
+    //           expect(model2).to.be.ok();
+    //           console.log(model2)
+    //           model2.update({second:'unique'}, user1._id, function(err, model3){
+    //             expect(err).to.be.ok();
+    //             expect(model3).to.not.be.ok();
+    //             var query = 'DROP CONSTRAINT ON (model:Model7) ASSERT model.second IS UNIQUE';
+    //             neoprene.query(query, function(err){
+    //               expect(err).to.not.be.ok();
+    //               done();
+    //             });
+    //           });
+    //         });
+    //       });
+    //   });
+    // });
   });
   describe("validations pass", function(){
     it("should allow an update: user, node and relationship events", function(done){

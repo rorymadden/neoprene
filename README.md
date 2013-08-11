@@ -41,13 +41,13 @@ var TestNodeSchema = new Schema({
 var TestNode = neoprene.model('TestNode', TestNodeSchema)
 
 var node = new TestNode({name: 'Test'})
-node.create(userId, function(err, node){
+node.create(function(err, node){
     //node.name will be set to test due to the lowercase option
   ....
 });
 
 var node2 = new TestNode({name: 'test2'})
-node2.create(userId, function(err, node){
+node2.create(function(err, node){
   ....
 });
 ```
@@ -70,7 +70,7 @@ node.create(userId, options, function(err, results){
   results.node // the created node
 });
 ```
-Neoprene creates event nodes by default. If you create a User, there is a UserCreated node. If you update the user there is a UserUpdated node. If you create a 'Project' node there is a ProjectCreated node, which will be linked to the user and the project. This is why you need to provide the userId to the create function.
+Neoprene creates event nodes by default. If you create a User, there is a UserCreated node. If you update the user there is a UserUpdated node. If you create a 'Project' node there is a ProjectCreated node, which will be linked to the user and the project. This is why you need to provide the userId to the create function. The userId is not required only when creting a 'User' node.
 
 These nodes can be used to show a log of changes over time or an activity stream. There is a getEvents method but be warned that this is likely to change in the future. If you want to turn off eventNodes you can set them in the options parameter whenever you create or update a node.
 
@@ -110,7 +110,7 @@ projectItem.create(userId, options, function(err, results){
 });
 ```
 
-Other useful options include roles and counters. Counters will be incremented when a node is created.
+Other useful options include roles and counters. Counters will be incremented when a node is created. At present you can only set the roleOwner to 'user'. But this may change in the future.
 
 ```js
 var options = {

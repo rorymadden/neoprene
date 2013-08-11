@@ -32,7 +32,7 @@ var user1 = {}
   , Schedule
   , Activity;
 
-describe.only('get events', function(){
+describe('get events', function(){
   before(function(done){
     var query = 'start n=node(*) match n-[r?]->() where id(n) <> 0 delete r,n';
     var params = {};
@@ -120,9 +120,9 @@ describe.only('get events', function(){
   });
   describe("multiple user changes", function(){
     before(function(done){
-      schedule1.update(user2._id, {scheduleName: 'new'}, function(err, schedule){
+      schedule1.update({scheduleName: 'new'}, user2._id, function(err, schedule){
         expect(err).to.not.be.ok();
-        schedule1.update(user1._id, {scheduleName: 'old'}, function(err, schedule){
+        schedule1.update({scheduleName: 'old'}, user1._id, function(err, schedule){
           expect(err).to.not.be.ok();
           done();
         });
@@ -152,7 +152,7 @@ describe.only('get events', function(){
   });
   describe("user-> user relationship", function(){
     before(function(done){
-      user1.createRelationshipTo({to:user2, type: 'FRIEND'}, function(err, rel){
+      user1.createRelationshipTo({node:user2, type: 'FRIEND'}, function(err, rel){
         expect(err).to.not.be.ok();
         done();
       });
@@ -189,6 +189,7 @@ describe.only('get events', function(){
     });
     it("should allow the input of an offset and numRecords", function(done){
       User.getEvents(user1._id, {offset: 1, numRecords:2}, function(err, events){
+        console.log()
         expect(err).to.not.be.ok();
         expect(events.length).to.be(2);
         done();

@@ -34,11 +34,11 @@ function createRelationships(user, callback) {
   var i3 = (i + 3) % users.length;
 
   // ISSUE here. For some reason they are failing.
-  node.createRelationshipTo({ to: users[i1], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
+  node.createRelationshipTo({ node: users[i1], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
     process.nextTick(function(){
-      node.createRelationshipTo({ to: users[i2], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
+      node.createRelationshipTo({ node: users[i2], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
         process.nextTick(function(){
-          node.createRelationshipTo({ to: users[i3], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
+          node.createRelationshipTo({ node: users[i3], type: 'cypherfollows'}, {eventNodes:false}, function(err, rel) {
             callback();
           });
         });

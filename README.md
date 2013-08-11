@@ -2,7 +2,7 @@
 
 Neo4j Object Modelling for Node.js
 
-NOTE: This only works with Neo4j 2.0. If you are using Neo4j < 2.0 then use neoprene 0.1.x. This version of neoprene is no longer supported as the changes are too large between the versions of Neo4j.
+NOTE: This only works with Neo4j 2.0. If you are using Neo4j < 2.0 then use neoprene 0.1.x. Versions pre 1.0 of neoprene are no longer supported as the changes are too large between the versions of Neo4j.
 
 ###Acknowledgements:
 This library is based heavily on the mongoose ORM for mongodb. The neo4j REST API was based on the 'node-neo4j' library.
@@ -24,70 +24,173 @@ neoprene.connect('http://localhost:7474');
 
 If you have used mongoose before there are a few things which need to be handled differently.
 
-Firstly Node has two types of objects: Nodes and Relationships. When specifying a new model you need to identify the model type that you want.
+Firstly Node has two types of objects: Nodes and Relationships. Neoprene only supports models for nodes. Also instead of a single save method neoprene has separate create and update methods.
 
 ***Note***
-Specifying unique indexes in Schemas does not work until CONSTRAINTS get added to neo4j
+Specifying unique indexes in Schemas only works with > Neo4j 2.0 M04, still some bugs remain. Hopefully fixed by full 2.0 release
 There is also an issue with indexing boolean values. Don't try it. Recommendation is to store the values as strings.
+
+
+*** Mandatory Model ***
+In this release, due to time constraints there is a mandatory need for a 'User' model. Hopefully this will be removed in the future. Pull requests are welcome.
 
 ```js
 var TestNodeSchema = new Schema({
   name: { type:String, index:true, required: true, lowercase: true, trim: true }
 })
-var TestNode = neoprene.model('node', 'TestNode', TestNodeSchema)
+var TestNode = neoprene.model('TestNode', TestNodeSchema)
 
 var node = new TestNode({name: 'Test'})
-node.save(function(err, node){
+node.create(userId, function(err, node){
     //node.name will be set to test due to the lowercase option
   ....
 });
 
 var node2 = new TestNode({name: 'test2'})
-node2.save(function(err, node){
+node2.create(userId, function(err, node){
   ....
 });
 ```
 
-Instead of creating joins between tables you need to create relationships. Relationships need a direction. You can create relationships To or From another node.
+Instead of creating joins between tables you need to create relationships. You often want to create a relationship when you are creating a node. It wouldn't be good to make you hit the database twice. When saving a node for the first time you can add in a relationship as well.
 
-You rarely create and save a relationship independently, you would use node.save or node.createRelationshipTo/From. These methods do not use the schema. The schema for a relationship is used when you get the relationship from the database. Therefore you need to be careful about options such as required, trim and lowercase as it will not give you your desired behaviour. However indexes will work.
 ```js
-var FollowsSchema = new Schema({
-  start: { type:Date, index: true },
-  end: { type:Date }
+var options = {
+  relationship: {
+    nodeLabel: 'TestNode',
+    indexField: '_id',
+    indexValue: 1,
+    direction: 'to',
+    type: 'Friend'
+  }
+}
+
+node.create(userId, options, function(err, results){
+  results.rel // the created relationship
+  results.node // the created node
 });
-neoprene.model('relationship', 'follows', FollowsSchema);
+```
+Neoprene creates event nodes by default. If you create a User, there is a UserCreated node. If you update the user there is a UserUpdated node. If you create a 'Project' node there is a ProjectCreated node, which will be linked to the user and the project. This is why you need to provide the userId to the create function.
 
-var startDate = new Date(2013, 0, 16);
-var endDate = new Date(2014, 0, 16);
+These nodes can be used to show a log of changes over time or an activity stream. There is a getEvents method but be warned that this is likely to change in the future. If you want to turn off eventNodes you can set them in the options parameter whenever you create or update a node.
 
-node.createRelationshipTo(node2, 'follows', {start: startDate, end: endDate}, function(err, rel){
+```js
+var options: {
+  eventNodes: {
+    node: false,
+    user: false
+  }
+}
+
+node.create(userId, options, function(err, results){
+  ...
+})
+```
+Event nodes by default only attach to the user and the created event. But you may want them to be attached to a related node in the case of a parent-child like relationship. In this case you can specify that you want the 'ProjectItemCreated' event to be linked to the related node as well.
+
+```js
+var options = {
+  relationship: {
+    nodeLabel: 'Project',
+    indexField: '_id',
+    indexValue: 1,
+    direction: 'from',
+    type: 'CONTAINS'
+  },
+  eventNodes: {
+    relationshipNode: true
+  }
+}
+
+var projectItem = new ProjectItem({data: 'this'});
+
+projectItem.create(userId, options, function(err, results){
+  results.rel // the created relationship
+  results.node // the created node
+});
+```
+
+Other useful options include roles and counters. Counters will be incremented when a node is created.
+
+```js
+var options = {
+  counters: [{
+    node: 'user' // other options include node or relationshipnode
+    field: 'count'
+  }],
+  role: {
+    roleOwner: 'user'
+    name: 'Admin'
+  }
+}
+
+node.create(userId, options, function(err, results){
+  ...
+})
+```
+
+You can also just create a relationship between nodes if you want to (e.g. Follow another user)
+
+```js
+var relationship = {
+  node: otherNode or id of otherNode
+  nodeType: 'User' // only need to specify a type if you are passing an id to node
+  type: 'FRIEND',
+  data: {
+    timestamp: Date.now()
+  }
+}
+var options = {
+  eventNodes: false
+}
+
+node.createRelationshipTo(relationship, options, function(err, rel){
   ...
 });
+
+node.createRelationshipFrom(relationship, options, function(err, rel){
+  ...
+});
+
 
 // or to later remove the relationship
-node.removeRelationshipTo(node2, 'follows', function(err, rel){
+node.removeRelationship(relId, options, function(err, rel){
   ...
 });
 ```
 
-You often want to create a relationship when you are creating a node. It wouldn't be good to make you hit the database twice. When saving a node for the first time you can add in a relationship as well.
+To update a node you use the update method. There is also the convenience findByIdAndUpdate function, but this results in two database calls: the first to fetch the node and the second to update it. All validations set in the schema run against the updates.
 
 ```js
-var node1 = new TestNode({name: 'no relationship'});
-var node2 = new TestNode({name: 'should link to 1'});
+var udpates = {
+  first: 'New First',
+  last: 'New Last'
+}
 
-node1.save(function(err, savedNode){
-  // you need to supply the label of the node that you are linking to, the field to search by and the value.
-  // you should ensure that the field you are using has an index on it.
-  // you need to supply a type and a direction as well
-  var rel = {nodeLabel: 'TestNode', indexedField: '_id', indexedValue: savedNode.id, type: 'Friend', direction: 'to' };
-  node2.save(rel, function(err, savedNode2){
-    // other code
-  });
+node.update(updates, userId, options, function(err, node){
+
+});
+
+ProjectItem.findByIdAndUpdate(pid, updates, userId, options, function(err, node){
+
+})
+```
+Options on the update include adding eventNodes to a related node (e.g. the Project node in the ProjectItem example) or turning off eventNodes
+
+```js
+var options = {
+  eventNodes: {
+    relationshipNode: {
+      id: relatedNodeId
+      type: 'Project'
+    }
+  }
+}
+
+node.update(updates, userId, options, function(err, node){
+
 });
 ```
-
 
 To query / navigate around the graph you start with a single node. You can index nodes to enable quick lookup at a later time.
 
@@ -102,10 +205,10 @@ If you are familiar with Mongoose the same options are available -
 1. find(conditions, fields, options, callback)
 2. findOne(conditions, fields, options, callback)
 3. findOneAndUpdate(conditions, update, options, callback)
-4. findOneAndRemove(conditions, options, callback)
+4. findOneAndRemove(conditions, options, callback) // be careful, this may leave orphan nodes. Better to write your own remove function
 5. findById(id, fields, options, callback)
 6. findByIdAndUpdate(id, update, options, callback)
-7. findByIdAndRemove(id, options, callback)
+7. findByIdAndRemove(id, options, callback) // be careful, this may leave orphan nodes. Better to write your own remove function
 
 
 Conditions is an object with fields and values. This is your search criteria
@@ -125,24 +228,6 @@ node.getAllRelationships('follows', function(err, results){
     //results.nodes is an array of nodes
   ...
 })
-```
-To update a node you can either directly update it or use the update method, examples below. Also, if you want to remove a node you can use the remove function. The first argument is whether you want to force the removal. As neo4j does not allow the deletion of a node with relationships you must set force to true to delete the node and relationships.
-
-```js
-node.first = 'New';
-node.save(function(err, node){});
-
-var updates = {
-    first: 'New';
-    last: 'Name';
-}
-node.update(updates, function(err, node){});
-
-//node.delete and node.del work as well
-node.remove(function(err){})
-
-//setting the first argument to true forces the deleteion of the node and associated relationships
-node.remove(true, function(err){})
 ```
 
 The final way to query the graph is to run a Cypher query against the graph.

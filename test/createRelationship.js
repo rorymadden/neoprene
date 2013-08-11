@@ -84,7 +84,7 @@ describe('create relationship', function(){
                 counts[results.rels[i]._type] = counts[results.rels[i]._type] ? counts[results.rels[i]._type]+1 : 1;
               }
               // May need to fix this for getEvents
-              expect(counts.NEXT_USER).to.be.equal(2);
+              expect(counts.NEXT).to.be.equal(2);
               expect(counts.EVENT_USER).to.be.equal(2);
               expect(counts.LATEST_EVENT).to.be.equal(2);
               done();
@@ -119,7 +119,7 @@ describe('create relationship', function(){
                 counts[results.rels[i]._type] = counts[results.rels[i]._type] ? counts[results.rels[i]._type]+1 : 1;
               }
               // May need to fix this for getEvents
-              expect(counts.NEXT_USER).to.be.equal(2);
+              expect(counts.NEXT).to.be.equal(2);
               expect(counts.EVENT_USER).to.be.equal(2);
               expect(counts.LATEST_EVENT).to.be.equal(2);
               done();

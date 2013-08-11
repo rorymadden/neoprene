@@ -350,7 +350,7 @@ describe('model create', function(){
     //           relTypes.push(results2.rels[i]._type);
     //           counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
     //         }
-    //         expect(relTypes.indexOf('NEXT_USER')).to.not.be.equal(-1);
+    //         expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
     //         expect(relTypes.indexOf('LATEST_EVENT')).to.not.be.equal(-1);
     //         expect(relTypes.indexOf('EVENT_SOURCE_USER')).to.not.be.equal(-1);
     //         expect(relTypes.indexOf('EVENT_TARGET_USER')).to.not.be.equal(-1);
@@ -459,8 +459,8 @@ describe('model create', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_USER')).to.not.be.equal(-1);
-            expect(relTypes.indexOf('NEXT_SCHEDULE')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('LATEST_EVENT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_SCHEDULE')).to.not.be.equal(-1);
@@ -500,7 +500,7 @@ describe('model create', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_USER')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('LATEST_EVENT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_USER')).to.not.be.equal(-1);
@@ -539,12 +539,12 @@ describe('model create', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_USER')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('LATEST_EVENT')).to.not.be.equal(-1);
             // expect(relTypes.indexOf('EVENT_SOURCE_USER')).to.not.be.equal(-1);
             // expect(relTypes.indexOf('EVENT_TARGET_USER')).to.not.be.equal(-1);
             expect(counts.LATEST_EVENT).to.be.equal(2);
-            expect(counts.NEXT_USER).to.be.equal(1);
+            expect(counts.NEXT).to.be.equal(1);
             done();
           });
         });

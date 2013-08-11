@@ -105,7 +105,7 @@ describe('model update', function(){
       Model1.create({first: '  BIG  '}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        model.update(user1._id, {first: null}, function(err, model){
+        model.update({first: null}, user1._id, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -121,7 +121,7 @@ describe('model update', function(){
       Model2.create({email: '    MAIL@TEST.COM   '}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        model.update(user1._id, {email: '    MAILTEST.COM   '}, function(err, model){
+        model.update({email: '    MAILTEST.COM   '}, user1._id, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -136,10 +136,10 @@ describe('model update', function(){
       Model3.create({number: 30}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        model.update(user1._id, {number:51}, function(err, model2){
+        model.update({number:51}, user1._id, function(err, model2){
           expect(err).to.be.ok();
           expect(model2).to.not.be.ok();
-          model.update(user1._id, {number:0}, function(err, model3){
+          model.update({number:0}, user1._id, function(err, model3){
             expect(err).to.be.ok();
             expect(model3).to.not.be.ok();
             done();
@@ -156,7 +156,7 @@ describe('model update', function(){
       Model4.create({gender: 'male'}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        model.update(user1._id, {gender: 'blue'}, function(err, model){
+        model.update({gender: 'blue'}, user1._id, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -172,7 +172,7 @@ describe('model update', function(){
       Model5.create({gender: '  MALE  '}, user1._id, function(err, model){
         expect(err).to.not.be.ok();
         expect(model).to.be.ok();
-        model.update(user1._id, {gender: 'blue'}, function(err, model){
+        model.update({gender: 'blue'}, user1._id, function(err, model){
           expect(err).to.be.ok();
           expect(model).to.not.be.ok();
           done();
@@ -198,7 +198,7 @@ describe('model update', function(){
               expect(err).to.not.be.ok();
               expect(model2).to.be.ok();
               console.log(model2)
-              model2.update(user1._id, {second:'unique'}, function(err, model3){
+              model2.update({second:'unique'}, user1._id, function(err, model3){
                 expect(err).to.be.ok();
                 expect(model).to.not.be.ok();
                 request
@@ -228,7 +228,7 @@ describe('model update', function(){
         }
       };
 
-      activity1.update(user1._id, updates, options, function(err, activity){
+      activity1.update(updates, user1._id, options, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
@@ -241,13 +241,11 @@ describe('model update', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_USER')).to.not.be.equal(-1);
-            expect(relTypes.indexOf('NEXT_SCHEDULE')).to.not.be.equal(-1);
-            expect(relTypes.indexOf('NEXT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_USER')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_SCHEDULE')).to.not.be.equal(-1);
             expect(counts.LATEST_EVENT).to.be.equal(3);
+            expect(counts.NEXT).to.be.equal(3);
             done();
           });
         });
@@ -258,7 +256,7 @@ describe('model update', function(){
         activityName: 'Activity: node and user events'
       };
 
-      activity1.update(user1._id, updates, function(err, activity){
+      activity1.update(updates, user1._id, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
@@ -271,11 +269,10 @@ describe('model update', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_USER')).to.not.be.equal(-1);
-            expect(relTypes.indexOf('NEXT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_USER')).to.not.be.equal(-1);
             expect(counts.LATEST_EVENT).to.be.equal(2);
+            expect(counts.NEXT).to.be.equal(2);
             done();
           });
         });
@@ -296,7 +293,7 @@ describe('model update', function(){
         }
       };
 
-      activity1.update(user1._id, updates, options, function(err, activity){
+      activity1.update(updates, user1._id, options, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
@@ -309,11 +306,10 @@ describe('model update', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_SCHEDULE')).to.not.be.equal(-1);
-            expect(relTypes.indexOf('NEXT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_SCHEDULE')).to.not.be.equal(-1);
             expect(counts.LATEST_EVENT).to.be.equal(2);
+            expect(counts.NEXT).to.be.equal(2);
             done();
           });
         });
@@ -330,7 +326,7 @@ describe('model update', function(){
         }
       }
 
-      activity1.update(user1._id, updates, options, function(err, activity){
+      activity1.update(updates, user1._id, options, function(err, activity){
         expect(activity.name).to.be.equal(updates.name);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
@@ -343,9 +339,10 @@ describe('model update', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_ACTIVITY')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(counts.LATEST_EVENT).to.be.equal(1);
+            expect(counts.NEXT).to.be.equal(1);
             done();
           });
         });
@@ -362,7 +359,7 @@ describe('model update', function(){
         }
       };
 
-      activity1.update(user1._id, updates, options, function(err, activity){
+      activity1.update(updates, user1._id, options, function(err, activity){
         expect(activity.activityName).to.be.equal(updates.activityName);
         activity.getOutgoingRelationships(function(err, results){
           expect(results.rels.length).to.be.equal(1);
@@ -375,9 +372,47 @@ describe('model update', function(){
               relTypes.push(results2.rels[i]._type);
               counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
             }
-            expect(relTypes.indexOf('NEXT_ACTIVITY')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('NEXT')).to.not.be.equal(-1);
             expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
             expect(counts.LATEST_EVENT).to.be.equal(1);
+            expect(counts.NEXT).to.be.equal(1);
+            done();
+          });
+        });
+      });
+    });
+    it("should allow an update by id: user, node and relationship events", function(done){
+      var updates = {
+        activityName: 'Activity: user, node and relationship events'
+      };
+
+      var options = {
+        eventNodes: {
+          relationshipNode: {
+            id: schedule1._id,
+            type: 'Schedule'
+          }
+        }
+      };
+
+      Activity.findByIdAndUpdate(activity1._id, updates, user1._id, options, function(err, activity){
+        expect(activity.name).to.be.equal(updates.name);
+        activity.getOutgoingRelationships(function(err, results){
+          expect(results.rels.length).to.be.equal(1);
+          expect(results.rels[0]._type).to.be.equal('LATEST_EVENT');
+          results.nodes[0].getAllRelationships(function(err, results2){
+            expect(results2.rels.length).to.be.equal(9);
+            var relTypes = [];
+            var counts = {};
+            for(var i=0, len = results2.rels.length; i< len; i++){
+              relTypes.push(results2.rels[i]._type);
+              counts[results2.rels[i]._type] = counts[results2.rels[i]._type] ? counts[results2.rels[i]._type]+1 : 1;
+            }
+            expect(relTypes.indexOf('EVENT_ACTIVITY')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('EVENT_USER')).to.not.be.equal(-1);
+            expect(relTypes.indexOf('EVENT_SCHEDULE')).to.not.be.equal(-1);
+            expect(counts.LATEST_EVENT).to.be.equal(3);
+            expect(counts.NEXT).to.be.equal(3);
             done();
           });
         });
@@ -400,7 +435,7 @@ describe('model update', function(){
           relationshipNode: true
         }
       };
-      activity1.update(user1._id, updates, options, function(err, res){
+      activity1.update(updates, user1._id, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
@@ -416,7 +451,7 @@ describe('model update', function(){
           }
         }
       };
-      activity1.update(user1._id, updates, options, function(err, res){
+      activity1.update(updates, user1._id, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
@@ -432,7 +467,7 @@ describe('model update', function(){
           }
         }
       };
-      activity1.update(user1._id, updates, options, function(err, res){
+      activity1.update(updates, user1._id, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
@@ -444,7 +479,7 @@ describe('model update', function(){
       var options = {
         role:true
       };
-      activity1.update(user1._id, updates, options, function(err, res){
+      activity1.update(updates, user1._id, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
@@ -456,7 +491,7 @@ describe('model update', function(){
       var options = {
         counters: true
       };
-      activity1.update(user1._id, updates, options, function(err, res){
+      activity1.update(updates, user1._id, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });
@@ -468,7 +503,7 @@ describe('model update', function(){
       var options = {
         relationship: true
       };
-      activity1.update(user1._id, updates, options, function(err, res){
+      activity1.update(updates, user1._id, options, function(err, res){
         expect(err).to.be.ok();
         done();
       });

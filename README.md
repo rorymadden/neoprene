@@ -1,3 +1,7 @@
+# NOT BEING MAINTAINED
+If you want to take over maintenance please let me know. 
+For similar functionality I would recommend [Seraph][seraph] and [Seraph Model][seraph-model]
+
 # Neoprene
 
 Neo4j Object Modelling for Node.js
@@ -259,3 +263,5 @@ If you're new to Neo4j, read the [Getting Started][neo4j-getting-started] page.
 [neo4j-rest-api]: http://docs.neo4j.org/chunked/stable/rest-api.html
 [neoprene-template]: https://github.com/rorymadden/neoprene-template
 [neo4j-getting-started]: http://wiki.neo4j.org/content/Getting_Started_With_Neo4j_Server
+[seraph]: https://github.com/brikteknologier/seraph
+[seraph-model]: https://github.com/brikteknologier/seraph-model

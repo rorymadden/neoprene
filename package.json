@@ -16,7 +16,7 @@
   "private": false,
   "main": "./lib",
   "dependencies": {
-    "superagent": "0.12.x",
+    "superagent": "~> 3.7.0",
     "async": "0.1.x",
     "hooks": "0.2.1"
   },
